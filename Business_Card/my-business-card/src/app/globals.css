@@ -1,28 +1,69 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-/* @ts-ignore */
+@theme {
+  --color-primary: rgb(0 0 0 / 75%);
+  --color-secondary: rgb(0 0 0 / 45%);
+  --color-tertiary: #4a4f47;
+  --color-tertiary-dark: #2e332b;
 
-/* stylelint-disable-next-line at-rule-no-unknown */
-@theme inline {     
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface-white-primary: #f5f5f5;
+  --color-surface-white-secondary: #dddbd4;
+  --color-surface-white-tertiary: #0f0f0f;
+
+  --color-surface-grey-primary: rgb(97 97 97 / 35%);
+  --color-surface-grey-secondary: rgb(47 46 46 / 80%);
+  --color-surface-grey-tertiary: #121212;
+
+  --color-surface-green-primary: rgb(71 78 68 / 80%);
+  --color-surface-green-secondary: #b6c8ad;
+  --color-surface-green-tertiary: #292d27;
+
+  --color-text-white-primary: #ffffff;
+  --color-text-white-secondary: rgb(255 255 255 / 70%);
+  --color-text-white-tertiary: #d9d9d9;
+
+  --color-label-surface-primary: rgb(120 120 120 / 20%);
+  --color-label-primary: #000000;
+  --color-label-secondary: #d9d9d9;
+  --color-label-tertiary: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-background: var(--color-surface-white-primary);
+    /* --color-foreground: var(--color-primary); */
+    --color-foreground: var(--color-text-white-primary);
+  }
+
+  /* @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background: var(--color-surface-grey-tertiary);
+      --color-foreground: var(--color-text-white-primary);
+    }
+  } */
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .test-apply {
+    @apply flex items-center justify-center min-h-screen bg-blue-500 text-white text-2xl font-bold;
+  }
 }
