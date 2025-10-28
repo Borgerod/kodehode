@@ -1,0 +1,18 @@
+___ INTRO - C# ________________________________________________________
+
+Multiplatform language with frameworks: 
+    - .NET    : Desktop apps
+    - Blazor  : Web apps
+    - Xamarin : Mobile apps
+    - Unity   : Video games
+
+Compilation: 
+    C# compiled into CIL (an intermediate language) 
+    which then can be interpeted into by the 
+    CLR (common language runtime)
+    
+    C# --compiled--> CIL --interpeted--> CLR 
+
+scoping: 
+    static void Main(string[] args ) -> hovedscope
+    Vi kan ikke kjøre en kode fra 'en annan en klasse' uten at det kjøres igjennom 'Main' først
