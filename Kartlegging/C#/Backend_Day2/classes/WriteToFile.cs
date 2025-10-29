@@ -19,9 +19,8 @@ public class WriteToFile
             Console.WriteLine($"File '{filePath}' does not exist.");
             return;
         }
-        Console.WriteLine($"\nFile Content:");
-        Console.WriteLine(File.ReadAllText(filePath));
-        Console.WriteLine($"\n");
+        Console.WriteLine($"\n___________________________________________________________________________________________\n\n                                         FILE CONTENT                                      \n___________________________________________________________________________________________\n");
+        Console.WriteLine($"{File.ReadAllText(filePath)}\n ");
     }
 }
 
