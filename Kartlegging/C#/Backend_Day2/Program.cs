@@ -4,24 +4,19 @@ class Program
 {
     static void Main(string[] args)
     {
+        string input_file_name;
+
         //* Print List Of Files - will get and print a list of all files from the current dir and its sub dir 
         LsCommand lsCommand = new LsCommand();
         lsCommand.LsImplementation();
 
-        string input_file_name = "";
-        GetUserInput getUserInput = new GetUserInput();
-        input_file_name = getUserInput.AskForFileName();
+        //* Get user input: SELECT
+        GetUserSelect getUserSelect = new GetUserSelect();
+        input_file_name = getUserSelect.SelectFileName();
 
-        //* Print File information
-        FileCommand fileCommand = new FileCommand();
-        fileCommand.PrintFileinformation(input_file_name);
-        
-        //* Print File Content
-        WriteToFile writeToFile = new WriteToFile();
-        writeToFile.ReadFileContent(input_file_name);
+        //* Will redirect app behaviour based on file or folder 
+        InputHandler inputHandler = new InputHandler();
+        inputHandler.FileOrDirRedirection(input_file_name);
 
-        // TO SIMULATE A FAIL/CRASH
-        // DontRunThis dontRunThis = new DontRunThis();
-        // dontRunThis.SeriouslyDontRunThis();
     }
 }
