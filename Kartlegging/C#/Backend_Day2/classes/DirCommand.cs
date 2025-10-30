@@ -10,8 +10,9 @@ public class DirCommand
         var dirInfo = new DirectoryInfo(name);
         FileCommand fileCommand = new FileCommand();
         long dirSize = GetDirectorySize(name);
-        Console.WriteLine($"\n___Dir Info________________\n   Name: {dirInfo.Name}\n   Type: Directory\n   Extension: /\n   Size: {FileCommand.GetReadableFileSize(dirSize)}\n   Created: {dirInfo.CreationTime}\n   Length: {dirInfo.GetFileSystemInfos().Length}\n___________________________");
-    }
+        // Console.WriteLine($"\n___Dir Info________________\n   Name: {dirInfo.Name}\n   Type: Directory\n   Extension: /\n   Size: {FileCommand.GetReadableFileSize(dirSize)}\n   Created: {dirInfo.CreationTime}\n   Length: {dirInfo.GetFileSystemInfos().Length}\n___________________________");
+        Console.WriteLine($"\n___Dir Info______________________\n   Name: {dirInfo.Name}\n   Type: Directory\n   Extension: /\n   Size: {FileCommand.GetReadableFileSize(dirSize)}\n   Created: {dirInfo.CreationTime}\n   Length: {dirInfo.GetFileSystemInfos().Length}\n_________________________________");
+    }    
     public void PrintDirPreview(string name)
     {
         WriteTo writeTo = new WriteTo();

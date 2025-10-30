@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-public enum DirAction { Preview, Open, Back }
 
+public enum DirAction { Preview, Open, Back }
+// public enum DirAction { Open, Back }
 public class GetUserSelect
 {
     private readonly SelectionTool selectionTool = new SelectionTool();
@@ -46,23 +47,27 @@ public class GetUserSelect
         // return full path (not tuple)
         return selected.Path;
     }
-    public DirAction SelectDirAction()
+    public DirAction SelectDirAction(string name)
     {
         //* Choice for when selected file is a dir/ --> what to do: (open dir) or (print info/content)
+        var dirCommand = new DirCommand();
 
-        var actions = new List<DirAction> { DirAction.Preview, DirAction.Open, DirAction.Back };
 
+        // var actions = new List<DirAction> { DirAction.Preview, DirAction.Open, DirAction.Back };
+
+        var actions = new List<DirAction> { DirAction.Open, DirAction.Back};
         Action renderHeader = () =>
         {
-            Console.WriteLine("Choose what to do:");
-            Console.WriteLine();
+            dirCommand.PrintDirInformation(name);
+            dirCommand.PrintDirPreview(name);
+            Console.WriteLine("_________________________________");
         };
 
-        // int selectedIndex = selectionTool.Select(actions, action => action.ToString().ToLowerInvariant(), renderHeader);
-        int selectedIndex = selectionTool.Select(actions, action => $"  {action.ToString().ToLowerInvariant()}", renderHeader);
+        // int selectedIndex = selectionTool.Select(actions, action => $"  {action.ToString().ToLowerInvariant()}", renderHeader);
+        int selectedIndex = selectionTool.Select(actions, action => $" {action.ToString().ToLowerInvariant()}", renderHeader, initialIndex: 0, horizontal: true);
         DirAction selectedAction = actions[selectedIndex];
-
         Console.Clear();
+        
         return selectedAction;
     }
 
@@ -85,17 +90,5 @@ public class GetUserSelect
         Console.Clear();
         return selectedAction;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
