@@ -32,9 +32,9 @@ public class GetUserSelect
             return (Path: path, Name: name, IsFolder: isDir, Display: displayName);
         }).ToList();
 
-        Action renderHeader = () =>
+        Action<int> renderHeader = (selectedIndex) =>
         {
-            Console.WriteLine("Current Directory:");
+            Console.WriteLine("Current Directory:\n");
             Console.WriteLine($"{Path.GetFileName(currentDir)}/n");
         };
 
@@ -49,35 +49,74 @@ public class GetUserSelect
     }
     public DirAction SelectDirAction(string name)
     {
-        //* Choice for when selected file is a dir/ --> what to do: (open dir) or (print info/content)
+        //* Choice for when selected file is a dir/ --> what to do: (open dir) or (print info+content)
         var dirCommand = new DirCommand();
 
+        // show a selectable header "preview" and only Open/Back as the selectable entries (horizontal)
+        var actions = new List<DirAction> { DirAction.Open, DirAction.Back };
 
-        // var actions = new List<DirAction> { DirAction.Preview, DirAction.Open, DirAction.Back };
-
-        var actions = new List<DirAction> { DirAction.Open, DirAction.Back};
-        Action renderHeader = () =>
+                Action<int> renderHeader = (selectedIdx) =>
         {
             dirCommand.PrintDirInformation(name);
-            dirCommand.PrintDirPreview(name);
-            Console.WriteLine("_________________________________");
+            Console.WriteLine();
+
+            // preview area (centered-ish). when selectedIdx == 0 the header is selected
+            Console.WriteLine("---------------------------------");
+
+            // write leading spaces uncolored, color only the bracketed label
+            string preview_label = "   preview   ";
+            string indent = "         ";
+            Console.Write($"{indent}");
+            if (selectedIdx == 0)
+            {
+                Console.BackgroundColor = ConsoleColor.DarkBlue;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write($"[{preview_label}]");
+                Console.ResetColor();
+                Console.WriteLine();
+            }
+            else
+            {
+                // keep alignment identical when not selected
+                Console.WriteLine($" {preview_label} ");
+            }
+
+            Console.WriteLine("---------------------------------");
         };
 
-        // int selectedIndex = selectionTool.Select(actions, action => $"  {action.ToString().ToLowerInvariant()}", renderHeader);
-        int selectedIndex = selectionTool.Select(actions, action => $" {action.ToString().ToLowerInvariant()}", renderHeader, initialIndex: 0, horizontal: true);
-        DirAction selectedAction = actions[selectedIndex];
-        Console.Clear();
-        
-        return selectedAction;
-    }
+        // initialIndex: 1 -> default focus on "open"; headerSelectable: true so header is selectable as index 0
+        int sel = selectionTool.Select(actions, action => $" {action.ToString().ToLowerInvariant()}", renderHeader, initialIndex: 1, horizontal: true, headerSelectable: true);
 
+        // when header (0) chosen => show detailed preview, then show open/back (horizontal) while keeping preview visible
+        if (sel == 0)
+        {
+            // show preview and then present bottom choices; bottomHeader must render preview content so it survives Console.Clear()
+            Action<int> bottomHeader = (idx) =>
+            {
+                dirCommand.PrintDirInformation(name);
+                Console.WriteLine();
+                Console.WriteLine("___Preview_______________________\n");
+                dirCommand.PrintDirPreview(name); // print preview inside header so it's visible while selection loops
+                Console.WriteLine("\n---------------------------------");
+            };
+
+            var bottom = new List<DirAction> { DirAction.Open, DirAction.Back };
+            int bottomIndex = selectionTool.Select(bottom, a => $" {a.ToString().ToLowerInvariant()}", bottomHeader, initialIndex: 0, horizontal: true);
+            Console.Clear();
+            return bottom[bottomIndex];
+        }
+
+        // otherwise sel maps to actions[sel-1] because header was selectable at index 0
+        Console.Clear();
+        return actions[sel - 1];
+    }
     public DirAction SelectPreviewDirAction()
     {
         //* Choice for when selected file is a dir/ --> what to do: (open dir) or (print info/content)
 
         var actions = new List<DirAction> { DirAction.Open, DirAction.Back };
 
-        Action renderHeader = () =>
+        Action<int> renderHeader = (idx) =>
         {
             Console.WriteLine("Choose what to do:");
             Console.WriteLine();
@@ -91,4 +130,3 @@ public class GetUserSelect
         return selectedAction;
     }
 }
-

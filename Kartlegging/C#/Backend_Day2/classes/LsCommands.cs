@@ -9,7 +9,7 @@ public class LsCommand
     private void PrintDirectory(string indent, bool isRoot)
     {
 
-        Console.WriteLine("");
+        // Console.WriteLine("");
         string currentDir = Environment.CurrentDirectory;
         var dirInfo = new DirectoryInfo(currentDir);
         if (isRoot)
@@ -33,7 +33,7 @@ public class LsCommand
             Console.WriteLine($"{indent}|- {files[i].Name}");
         }
         // Console.WriteLine($"\n");
-        Console.WriteLine($"");
+        // Console.WriteLine($"");
     }
 
 }
