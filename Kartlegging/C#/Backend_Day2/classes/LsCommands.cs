@@ -9,14 +9,13 @@ public class LsCommand
     private void PrintDirectory(string indent, bool isRoot)
     {
 
-        Console.WriteLine($"Current Directory:");
-
+        Console.WriteLine("");
         string currentDir = Environment.CurrentDirectory;
         var dirInfo = new DirectoryInfo(currentDir);
         if (isRoot)
         {
-            Console.WriteLine($"{dirInfo.Name}/");
-            indent += "    ";
+            Console.WriteLine($"    {dirInfo.Name}/");
+            indent += "        ";
         }
 
         var directories = dirInfo.GetDirectories();
@@ -33,7 +32,8 @@ public class LsCommand
             var isLast = (i == files.Length - 1);
             Console.WriteLine($"{indent}|- {files[i].Name}");
         }
-        Console.WriteLine($"\n");
+        // Console.WriteLine($"\n");
+        Console.WriteLine($"");
     }
 
 }
