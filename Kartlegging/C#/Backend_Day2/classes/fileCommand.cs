@@ -37,30 +37,3 @@ public class FileCommand
     }
 }
 
-
-
-//// *FASIT
-// public class FileCommand
-// {
-//     public void PrintFileinformation(string fileName)
-//     {
-//         var extension = Path.GetExtension(fileName);
-
-//         string typeOfFile = "";
-
-//         switch (extension)
-//         {
-//             case ".md":
-//                 typeOfFile = "ASCII text";
-//                 break;
-//             case ".cs":
-//                 typeOfFile = "C# source file";
-//                 break;
-//             case ".txt":
-//                 typeOfFile = "Plain text file";
-//                 break;
-//         }
-
-//         Console.WriteLine($"Filename: {fileName} type of file: {typeOfFile} extension: {extension}");
-//     }
-// }

@@ -23,22 +23,3 @@ public class WriteToFile
         Console.WriteLine($"{File.ReadAllText(filePath)}\n ");
     }
 }
-
-
-// public class WriteToFile
-// {
-//     public void WriteFileContent(string filePath)
-//     // public void WriteFileContent ( string filePath, string content)
-//     {
-//         Console.WriteLine("Write changes:");
-//         var userInput = Console.ReadLine();
-//         File.WriteAllText(filePath, userInput);
-//     }
-
-//     public void ReadFileContent(string filePath)
-//     {
-//         Console.WriteLine(File.ReadAllText(filePath));
-//     }
-// }
-
-
