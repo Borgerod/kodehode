@@ -6,11 +6,14 @@ using System.Diagnostics;
 public class SelectionTool
 {
 
-    public int Select<T>(IReadOnlyList<T> entries, Func<T, string> formatEntry, Action<int>? renderHeader = null, int initialIndex = 0, bool horizontal = false, bool headerSelectable = false)
+    public int Select<T>(IReadOnlyList<T> entries, Func<T, string> formatEntry, Action<int>? renderHeader = null, int initialIndex = 0, bool horizontal = false, bool headerSelectable = false, int headerItemCount = 0)
     {
         if (entries is null) throw new ArgumentNullException(nameof(entries));
         if (formatEntry is null) throw new ArgumentNullException(nameof(formatEntry));
-        int totalSelectable = entries.Count + (headerSelectable ? 1 : 0);
+
+        // headerItemCount: when headerSelectable==true this defines how many selectable slots the header occupies.
+        int headerCount = headerSelectable ? Math.Max(1, headerItemCount) : 0;
+        int totalSelectable = entries.Count + headerCount;
         if (totalSelectable == 0) throw new ArgumentException("Selection list cannot be empty.", nameof(entries));
 
         int selectedIndex = Math.Clamp(initialIndex, 0, totalSelectable - 1);
@@ -19,26 +22,22 @@ public class SelectionTool
         do
         {
             Console.Clear();
-            // ensure no lingering colors or cursor state from previous loop
             Console.ResetColor();
             Console.SetCursorPosition(0, 0);
 
-            // pass the selected index to header (0 meaning header selected when headerSelectable==true)
+            // renderHeader receives the combined selectedIndex:
+            // - if selectedIndex < headerCount: header region is selected and index indicates which header slot
+            // - otherwise selectedIndex maps to entries: selectedIndex - headerCount
             renderHeader?.Invoke(selectedIndex);
-
-            // ensure header block and controls are separated (prevents overlapping / visual duplication)
-            // Console.WriteLine();
 
             if (horizontal)
             {
-                // Spacing before items
                 Console.Write("   ");
-                // render entries inline; when headerSelectable==true entries map to indexes 1..Count
                 for (int i = 0; i < entries.Count; i++)
                 {
-                    int displayIndex = headerSelectable ? i + 1 : i;
+                    int displayIndex = headerCount + i;
                     string label = formatEntry(entries[i]);
-                    string padded = $"  {label}   ";
+                    string padded = $" {label} ";
                     if (displayIndex == selectedIndex)
                     {
                         Console.BackgroundColor = ConsoleColor.DarkBlue;
@@ -48,20 +47,17 @@ public class SelectionTool
                     }
                     else
                     {
-                        Console.Write(padded);
+                        Console.Write($" {padded} ");
                     }
-                    // spacing between items
                     Console.Write("     ");
                 }
-
                 Console.WriteLine();
             }
             else
             {
-                // existing vertical rendering; entries start at index 1 when headerSelectable == true
                 for (int i = 0; i < entries.Count; i++)
                 {
-                    int displayIndex = headerSelectable ? i + 1 : i;
+                    int displayIndex = headerCount + i;
                     string label = formatEntry(entries[i]);
 
                     if (displayIndex == selectedIndex)
@@ -86,51 +82,32 @@ public class SelectionTool
 
             key = Console.ReadKey(true).Key;
 
-            // navigation logic across the selectable range
-            if (horizontal)
+            // Universal navigation across 0..totalSelectable-1
+            if (key == ConsoleKey.LeftArrow)
             {
-                // Left/Right move among entries (when headerSelectable the entries are 1..Count)
-                if (key == ConsoleKey.LeftArrow)
+                // move left (wrap)
+                selectedIndex = (selectedIndex - 1 + totalSelectable) % totalSelectable;
+            }
+            else if (key == ConsoleKey.RightArrow)
+            {
+                selectedIndex = (selectedIndex + 1) % totalSelectable;
+            }
+            else if (key == ConsoleKey.UpArrow)
+            {
+                // If we're on the first real item, jump to the leftmost header slot (0)
+                // headerCount was computed earlier
+                if (headerCount > 0 && selectedIndex == headerCount)
                 {
-                    if (headerSelectable)
-                    {
-                        if (selectedIndex == 0) selectedIndex = entries.Count;
-                        else if (selectedIndex == 1) selectedIndex = entries.Count;
-                        else selectedIndex--;
-                    }
-                    else
-                    {
-                        selectedIndex = selectedIndex == 0 ? entries.Count - 1 : selectedIndex - 1;
-                    }
+                    selectedIndex = 0;
                 }
-                else if (key == ConsoleKey.RightArrow)
-                {
-                    if (headerSelectable)
-                    {
-                        if (selectedIndex == 0) selectedIndex = 1;
-                        else if (selectedIndex == entries.Count) selectedIndex = 1;
-                        else selectedIndex++;
-                    }
-                    else
-                    {
-                        selectedIndex = selectedIndex == entries.Count - 1 ? 0 : selectedIndex + 1;
-                    }
-                }
-                // Up/Down move through whole selectable range (including header if present)
-                else if (key == ConsoleKey.UpArrow)
+                else
                 {
                     selectedIndex = selectedIndex == 0 ? totalSelectable - 1 : selectedIndex - 1;
                 }
-                else if (key == ConsoleKey.DownArrow)
-                {
-                    selectedIndex = selectedIndex == totalSelectable - 1 ? 0 : selectedIndex + 1;
-                }
             }
-            else
+            else if (key == ConsoleKey.DownArrow)
             {
-                // vertical: Up/Down move through whole selectable range (headerSelectable integrates naturally because displayIndex mapping)
-                if (key == ConsoleKey.UpArrow) selectedIndex = selectedIndex == 0 ? totalSelectable - 1 : selectedIndex - 1;
-                else if (key == ConsoleKey.DownArrow) selectedIndex = selectedIndex == totalSelectable - 1 ? 0 : selectedIndex + 1;
+                selectedIndex = selectedIndex == totalSelectable - 1 ? 0 : selectedIndex + 1;
             }
 
         } while (key != ConsoleKey.Enter);
