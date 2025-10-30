@@ -37,6 +37,7 @@ public class WriteTo
         //     return;
         // }
         Console.WriteLine($"\n___________________________________________________________________________________________\n\n                                         FILE CONTENT                                      \n___________________________________________________________________________________________\n");
-        Console.WriteLine($"{File.ReadAllText(name)}\n ");
+        // Console.WriteLine($"{File.ReadAllText(name)}\n");
+        Console.WriteLine($"{File.ReadAllText(name)}");
     }
 }
