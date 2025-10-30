@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\oppdr\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\Tutorial.csproj": {}
+    "C:\\Users\\borge\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\Tutorial.csproj": {}
   },
   "projects": {
-    "C:\\Users\\oppdr\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\Tutorial.csproj": {
+    "C:\\Users\\borge\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\Tutorial.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\oppdr\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\Tutorial.csproj",
+        "projectUniqueName": "C:\\Users\\borge\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\Tutorial.csproj",
         "projectName": "Tutorial",
-        "projectPath": "C:\\Users\\oppdr\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\Tutorial.csproj",
-        "packagesPath": "C:\\Users\\oppdr\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\oppdr\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\obj\\",
+        "projectPath": "C:\\Users\\borge\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\Tutorial.csproj",
+        "packagesPath": "C:\\Users\\borge\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\borge\\Documents\\GitHub\\kodehode\\Kartlegging\\C#\\Tutorial\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\oppdr\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\borge\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
