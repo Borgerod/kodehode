@@ -14,36 +14,36 @@ public class InputHandler
 
             //> PLACEHOLDER: user select choice: OPEN / PRINT
             GetUserSelect getUserSelect = new GetUserSelect();
-            DirAction selectedDirAction = getUserSelect.SelectDirAction();
+            DirAction selectedDirAction = getUserSelect.SelectDirAction(name);
 
-            switch (selectedDirAction)
-            {
-                case DirAction.Preview:
-                    {
-                        // DO: make the commands to print information and then preview (print content)
-                        var dirCommand = new DirCommand();
-                        dirCommand.PrintDirInformation(name);
-                        dirCommand.PrintDirPreview(name);
-                        // TODO: add selection: (go back) or (open)
-                        // getUserSelect.SelectPreviewDirAction()
-                        DirAction selectedPreviewDirAction = getUserSelect.SelectPreviewDirAction();
-                        break;
-                    }
-                case DirAction.Open:
-                    {
-                        // DO: 
-                        // open dir + repeat navigation
-                        // e.g. call a method to open/iterate into the directory
-                        OpenDirectory(name);
-                        break;
-                    }
-                case DirAction.Back:
-                default:
-                    {
-                        // return to caller / go back without action
-                        break;
-                    }
-            }
+            // switch (selectedDirAction)
+            // {
+            //     case DirAction.Preview:
+            //         {
+            //             // DO: make the commands to print information and then preview (print content)
+            //             var dirCommand = new DirCommand();
+            //             dirCommand.PrintDirInformation(name);
+            //             dirCommand.PrintDirPreview(name);
+            //             // TODO: add selection: (go back) or (open)
+            //             // getUserSelect.SelectPreviewDirAction()
+            //             // DirAction selectedPreviewDirAction = getUserSelect.SelectPreviewDirAction();
+            //             break;
+            //         }
+            //     case DirAction.Open:
+            //         {
+            //             // DO: 
+            //             // open dir + repeat navigation
+            //             // e.g. call a method to open/iterate into the directory
+            //             OpenDirectory(name);
+            //             break;
+            //         }
+            //     case DirAction.Back:
+            //     default:
+            //         {
+            //             // return to caller / go back without action
+            //             break;
+            //         }
+            // }
 
             return;
         }
