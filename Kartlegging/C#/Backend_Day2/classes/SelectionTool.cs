@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 
 public class SelectionTool
 {
 
-    public int Select<T>(IReadOnlyList<T> entries, Func<T, string> formatEntry, Action<int>? renderHeader = null, int initialIndex = 0, bool horizontal = false, bool headerSelectable = false, int headerItemCount = 0)
+    public int Select<T>(IReadOnlyList<T> entries, Func<T, string> formatEntry, Action<int>? renderHeader = null, int initialIndex = 0, bool horizontal = false, bool headerSelectable = false, int headerItemCount = 0, bool renderWholeArea = false)
     {
         if (entries is null) throw new ArgumentNullException(nameof(entries));
         if (formatEntry is null) throw new ArgumentNullException(nameof(formatEntry));
@@ -18,10 +20,95 @@ public class SelectionTool
 
         int selectedIndex = Math.Clamp(initialIndex, 0, totalSelectable - 1);
         ConsoleKey key;
+        // track previous console width to detect resize events
+    int prevConsoleWidth;
+    try { prevConsoleWidth = Console.WindowWidth; } catch { prevConsoleWidth = 80; }
+
+    // start a lightweight watcher task that clears the console when the window is resized
+    var watcherStop = false;
+    var watcher = Task.Run(() =>
+    {
+        int last = prevConsoleWidth;
+        while (!watcherStop)
+        {
+            try
+            {
+                int cw = Console.WindowWidth;
+                if (cw != last)
+                {
+                    last = cw;
+                    try { Console.Clear(); } catch { }
+                }
+            }
+            catch { }
+            Thread.Sleep(150);
+        }
+    });
+
+        void SafeConsoleClear()
+        {
+            try
+            {
+                Console.Clear();
+                return;
+            }
+            catch (System.IO.IOException)
+            {
+                // swallow and fall back to manual clear
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                // swallow and fall back to manual clear
+            }
+
+            try
+            {
+                int width;
+                try { width = Math.Max(1, Console.WindowWidth); }
+                catch { width = 120; }
+
+                int height;
+                try { height = Math.Max(1, Console.WindowHeight); }
+                catch { height = 30; }
+
+                string blankLine = new string(' ', width);
+                Console.SetCursorPosition(0, 0);
+                for (int i = 0; i < height; i++)
+                {
+                    Console.Write(blankLine);
+                }
+                Console.SetCursorPosition(0, 0);
+            }
+            catch
+            {
+                // ignore secondary clearing failures to keep the input loop responsive
+            }
+        }
 
         do
         {
-            Console.Clear();
+            // detect console width changes and clear so layout recalculates cleanly
+            int curWidth;
+            try { curWidth = Console.WindowWidth; } catch { curWidth = prevConsoleWidth; }
+            if (curWidth != prevConsoleWidth)
+            {
+                try { Console.Clear(); } catch { }
+                prevConsoleWidth = curWidth;
+            }
+
+            // Try to clear and reset cursor; on some terminals SetCursorPosition may fail after a resize
+            try
+            {
+                Console.Clear();
+                Console.ResetColor();
+                Console.SetCursorPosition(0, 0);
+            }
+            catch
+            {
+                try { Console.Clear(); } catch { }
+                try { Console.ResetColor(); } catch { }
+            }
+            SafeConsoleClear();
             Console.ResetColor();
             Console.SetCursorPosition(0, 0);
 
@@ -30,46 +117,49 @@ public class SelectionTool
             // - otherwise selectedIndex maps to entries: selectedIndex - headerCount
             renderHeader?.Invoke(selectedIndex);
 
-            if (horizontal)
+            if (!renderWholeArea)
             {
-                Console.Write("   ");
-                for (int i = 0; i < entries.Count; i++)
+                if (horizontal)
                 {
-                    int displayIndex = headerCount + i;
-                    string label = formatEntry(entries[i]);
-                    string padded = $" {label} ";
-                    if (displayIndex == selectedIndex)
+                    Console.Write("   ");
+                    for (int i = 0; i < entries.Count; i++)
                     {
-                        Console.BackgroundColor = ConsoleColor.DarkBlue;
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write($"[{padded}]");
-                        Console.ResetColor();
+                        int displayIndex = headerCount + i;
+                        string label = formatEntry(entries[i]);
+                        string padded = $" {label} ";
+                        if (displayIndex == selectedIndex)
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.Write($"[{padded}]");
+                            Console.ResetColor();
+                        }
+                        else
+                        {
+                            Console.Write($" {padded} ");
+                        }
+                        Console.Write("     ");
                     }
-                    else
-                    {
-                        Console.Write($" {padded} ");
-                    }
-                    Console.Write("     ");
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
-            }
-            else
-            {
-                for (int i = 0; i < entries.Count; i++)
+                else
                 {
-                    int displayIndex = headerCount + i;
-                    string label = formatEntry(entries[i]);
+                    for (int i = 0; i < entries.Count; i++)
+                    {
+                        int displayIndex = headerCount + i;
+                        string label = formatEntry(entries[i]);
 
-                    if (displayIndex == selectedIndex)
-                    {
-                        Console.BackgroundColor = ConsoleColor.DarkBlue;
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($">     {label.TrimStart()}");
-                        Console.ResetColor();
-                    }
-                    else
-                    {
-                        Console.WriteLine($"    {label}");
+                        if (displayIndex == selectedIndex)
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkBlue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.WriteLine($">     {label.TrimStart()}");
+                            Console.ResetColor();
+                        }
+                        else
+                        {
+                            Console.WriteLine($"    {label}");
+                        }
                     }
                 }
             }
@@ -110,9 +200,12 @@ public class SelectionTool
                 selectedIndex = selectedIndex == totalSelectable - 1 ? 0 : selectedIndex + 1;
             }
 
-        } while (key != ConsoleKey.Enter);
+    } while (key != ConsoleKey.Enter);
 
-        return selectedIndex;
+    // stop watcher cleanly
+    try { watcherStop = true; watcher.Wait(200); } catch { }
+
+    return selectedIndex;
 
         string GetCallerMethodName()
         {

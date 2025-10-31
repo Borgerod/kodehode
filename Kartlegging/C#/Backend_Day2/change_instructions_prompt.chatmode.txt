@@ -1,0 +1,270 @@
+This is how it currently looks like:
+"
+                                                                                                            [  Exit  ] 
+Backend_Day2/                           |   Info                                  |   Preview
+
+      |- bin/                           |                                         |
+      |- classes/                       |                                         |
+      |- obj/                           |                                         |
+      |- .gitignore                     |                                         |
+>     |- Backend_Day2.csproj            | Name: Backend_Day2.csproj | Type: Fi... | <Project Sdk="Microsoft.NET.S...   
+      |- Backend_Day2.sln               |                                         |
+      |- command.txt                    |                                         |
+      |- commands.md                    |                                         |
+      |- my_document.txt                |                                         |
+      |- Program.cs                     |                                         |
+      |- README.md                      |                                         |
+      |- TODO.md                        |                                         |
+
+"
+
+This is how it should look like: 
+"
+                                                                                                                           [  Exit  ]  
+                                                                                                                                     
+ Backend_Day2/                             |  Info                                |   Preview                                       |
+       |- bin/                             |                                      |                                                 |
+       |- classes/                         |  Name: Backend_Day2.csproj           |  <Project Sdk="Microsoft.NET.Sdk">              |
+       |- obj/                             |  Type: C# project                    |                                                 |
+       |- .gitignore                       |  Extension: .csproj                  |    <PropertyGroup>                              |
+ >     |- Backend_Day2.csproj              |  Size: 250 B                         |      <OutputType>Exe</OutputType>               |
+       |- Backend_Day2.sln                 |  Created: 28.10.2025 11:23           |      <TargetFramework>net9.0</TargetFramework>  |
+       |- command.txt                      |  Path: C:\Users\borge\               |      <ImplicitUsings>enable</ImplicitUsings>    |
+       |- commands.md                      |        Documents\GitHub\             |      <Nullable>enable</Nullable>                |
+       |- my_document.txt                  |        kodehode\Kartlegging\         |    </PropertyGroup>                             |
+       |- Program.cs                       |        C#\Backend_Day2\              |                                                 |
+       |- README.md                        |        Backend_Day2.csproj           |  </Project>                                     |
+       |- TODO.md                          |                                      |                                                 |
+                                           |                                      |                                                 |
+"                                                                                                                                   
+                                                                                                            
+1)    in info and preview you misunderstood what i said about wrapping.
+      I meant each individual line should be no-wrap. but the info or preview or document itself should wrap.
+      
+      INFO: 
+      for info; each varibale ("Name", "Type", "Extention", etc) should be on its own line. 
+      (note: that "line yx:" should not be included that if just for indicating a new line)
+      '
+      line 1x ->  "Name: DirCommand.cs" 
+      line 2x ->  "Type: cs "
+      line 3x ->  "Extension: .cs"
+      line 4x ->  "Size: 1,72 KB"
+      '
+      it should not look like this: 
+      '
+      line 1x: "Name: classes | Type: Directory ..."
+      '
+      what i meant by when to add "..." is:
+      when an individual variable is too long, for example, if: 
+            line 1x -> "|  Name: DirCommandModificationControllCenter.cs  |" <- too long, need to shorten     => "|  Name: DirCommandModificationCon...  |"
+            line 2x -> "|  Type: cs                            |"            <- Not too long, remain the same => "|  Type: cs                            |"
+            line 2x -> "|  Extension: .cs                      |"            <- Not too long, remain the same => "|  Extension: .cs                      |"
+      
+      'info_Exception':
+      And the 'Exception' to this rule, is the path, which should wrap (and is the only variable that is allowedd to wrap):
+      examople 1: 
+            line 1x -> "|  Path: C:\Users\borge\docs\myDoc.md  |"            
+                  <- Not too long, remain the same => 
+                  line 1x ->"|  Path: C:\Users\borge\docs\myDoc.md  |"
+      examople 2: 
+            line 1x -> "|  Path: C:\Users\borge\Documents\GitHub\kodehode\Kartlegging\C#\Backend_Day2\classes\DirCommand.cs  |" 
+                  <- Way too long, need to wrap => 
+                  line 1x -> "|  Path: C:\Users\borge\               |"
+                  line 2x -> "|        Documents\GitHub\             |"
+                  line 3x -> "|        kodehode\Kartlegging\         |"
+                  line 4x -> "|        C#\Backend_Day2\              |"
+                  line 5x -> "|        classes\DirCommand.cs         |"
+                  line 6x -> "|                                      |"
+      
+      DIR-SECTION:
+            The same rules for INFO applied for the DIR-SECTION also. (without the 'info_Exception')
+            if a dir-item is too long, it should be clip and have "..." added to it. 
+
+      PREVIEW:
+            Preview works the same way as info (without the 'info_Exception'),
+            where if highlighted dir item == dir: each dir item should be its seperate line. and the "..." whould be at the bottom if the list it self is too long (the list consist of too many lines).
+            For when pre viewing a Dir (dir-snippets):
+                  it should NOT look like this: 
+                        line 1x -> "|  DirCommand.cs  DontRunThis.c...  |" 
+                        
+                        line 1x -> "|  Backend_Day2.csproj.nuget.dgspec.json  Backend_Day2.csproj.nuget.g.props  Ba...  |" 
+                  But is should look like this:
+                        line 1x -> "|  DirCommand.cs                       |" 
+                        line 2x -> "|  DontRunThis.cs                      |"
+                        line 3x -> "|  fileCommand.cs                      |"
+                        line 3x -> "|  GetUserInput.cs                     |"
+                        line 3x -> "|  GetUserSelect.cs                    |"
+                        line 3x -> "|  InputHandler.cs                     |"
+                        line 3x -> "|  LsCommands.cs                       |"
+                        line 3x -> "|  Navigation.cs                       |"
+                        line 3x -> "|  . . .                               |"
+
+            For when pre viewing a file (file-snippets):
+                  It should not look like this: 
+                        line 1x -> "|  <Project Sdk="Microsoft.NET.Sdk">  <Proper...  |"
+                        line 2x -> "|                                                 |"
+                        line 3x -> "|                                                 |"
+                        line 3x -> "|                                                 |"
+                        line 3x -> "|                                                 |"
+                        line 3x -> "|                                                 |"
+                        line 3x -> "|                                                 |"
+                        line 3x -> "|                                                 |"
+                        line 3x -> "|                                                 |"
+
+                  But it should look like this: 
+                        line 1x -> "|  <Project Sdk="Microsoft.NET.Sdk">              |"
+                        line 2x -> "|                                                 |"
+                        line 3x -> "|    <PropertyGroup>                              |"
+                        line 3x -> "|      <OutputType>Exe</OutputType>               |"
+                        line 3x -> "|      <TargetFramework>net9.0</TargetFramework>  |"
+                        line 3x -> "|      <ImplicitUsings>enable</ImplicitUsings>    |"
+                        line 3x -> "|      <Nullable>enable</Nullable>                |"
+                        line 3x -> "|    </PropertyGroup>                             |"
+                        line 3x -> "|                                                 |"
+                        line 3x -> "|  </Project>                                     |"
+                        line 3x -> "|                                                 |"
+
+
+                  if one 'line' in the previewed file is too long, it can be clipped like this: 
+                        line 3x -> "|      <TargetFramework>net109.0</TargetFram... |"
+
+                  and if the previewed file is itself is too long, when len(previewItems)+2 == len(dirItems)+1 OR len(previewItems) == len(infoItems):
+                        example; len(dirItems)+1 = 12:
+                        line 1x  -> "|  <Project Sdk="Microsoft.NET.Sdk">            |"                                                                                            line 1x  -> "|  <Project Sdk="Microsoft.NET.Sdk">            |"
+                        line 2x  -> "|                                               |"                                                                                            line 2x  -> "|                                               |"
+                        line 3x  -> "|    <PropertyGroup>                            |"                                                                                            line 3x  -> "|    <PropertyGroup>                            |"
+                        line 4x  -> "|      <OutputType>Exe</OutputType>             |"                                                                                            line 4x  -> "|      <OutputType>Exe</OutputType>             |"
+                        line 5x  -> "|      <TargetFramework>net9.0</TargetFramework>|"                                                                                            line 5x  -> "|      <TargetFramework>net9.0</TargetFramework>|"
+                        line 6x  -> "|      <ImplicitUsings>enable</ImplicitUsings>  |"                                                                                            line 6x  -> "|      <ImplicitUsings>enable</ImplicitUsings>  |"
+                        line 7x  -> "|      <Nullable>enable</Nullable>              |"                                                                                            line 7x  -> "|      <Nullable>enable</Nullable>              |"
+                        line 8x  -> "|      <Something>enable</Something>            |"                                                                                            line 8x  -> "|      <Something>enable</Something>            |"
+                        line 9x  -> "|      <SomethingElse>disable</SomethingElse>   |"                                                                                            line 9x  -> "|      <SomethingElse>disable</SomethingElse>   |"
+                        line 10x -> "|      <somethingNew>enable</somethingNew>      |"                                                                                            line 10x -> "|      <somethingNew>enable</somethingNew>      |"
+                        line 11x -> "|    </PropertyGroup>                           |"                                                                                            line 11x -> "|    </PropertyGroup>                           |"
+                        line 12x -> "|                                               |"  <-- len(dirItems)+1 == 11+1 = 12 --> line 12x is the point where preview should stop. ==> line 12x -> "|   . . .                                       |"
+                        line 13x -> "|  </Project>                                   |"                                                                                            line 13x -> "|                                               |"
+                        line 14x -> "|                                               |"                                                                                            line 14x -> "|                                               |"
+                  
+
+            When should the preview stop?
+                  the preview should stop and replace the last line with "..." at the point where len(previewItems)+2 == len(dirItems)+1 OR len(previewItems) == len(infoItems),
+                  or in other words: len(dirItems)+1 OR len(infoItems)+2 = the line where preview should stop.
+                  note: len(previewItems)+2 -> we need to count the title line and the space between.
+                  note: len(dirItems)+1 -> we are adding +1 because of we are including the name of the dir itself (e.g.: "Backend_Day2/") since it counts as a line.
+                  if using my previous example, this would be length of classes: 
+                        example; len(dirItems)+1 = 13:
+                        line 1x ->  " Backend_Day2/                             |"                                                                                             line 1x ->  "|  Preview                        |"
+                        line 2x ->  "       |- bin/                             |"                                                                                             line 2x ->  "|                                 |"
+                        line 3x ->  " >     |- classes/                         |"                                                                                             line 3x ->  "|  classes/                       |"
+                        line 4x ->  "       |- obj/                             |"                                                                                             line 4x ->  "|  >    |- DirCommand.cs          |"
+                        line 5x ->  "       |- .gitignore                       |"                                                                                             line 5x ->  "|       |- DontRunThis.cs         |"
+                        line 6x ->  "       |- Backend_Day2.csproj              |"                                                                                             line 6x ->  "|       |- fileCommand.cs         |"
+                        line 7x ->  "       |- Backend_Day2.sln                 |"                                                                                             line 7x ->  "|       |- GetUserInput.cs        |"
+                        line 8x ->  "       |- command.txt                      |"                                                                                             line 8x ->  "|       |- GetUserSelect.cs       |"
+                        line 9x ->  "       |- commands.md                      |"                                                                                             line 9x ->  "|       |- InputHandler.cs        |"
+                        line 10x -> "       |- my_document.txt                  |"                                                                                             line 10x -> "|       |- LsCommands.cs          |"
+                        line 11x -> "       |- Program.cs                       |"                                                                                             line 11x -> "|       |- Navigation.cs          |"
+                        line 12x -> "       |- README.md                        |"                                                                                             line 12x -> "|       |- SelectionTool.cs       |"
+                        line 13x -> "       |- TODO.md                          |"  <-- len(dirItems)+1 == 12+1 = 13 --> line 13x is the point where preview should stop. ==>  line 13x -> "|       . . .                     |"
+                        line 13x -> "                                           |"                                                                                             line 13x -> "|                                 |"
+
+
+
+2) The 'Info' and 'Preview' should NOT start at the same line as the highlighted dir-item, 
+   but it should start at the top, after the title line, with one line inbetween them:
+   line 1x ->     |  Preview                             |
+   line 2x ->     |                                      |
+   line 3x ->     |  <Project Sdk="Microsoft.NET.Sdk">   |
+
+   this is NOT how it should look like: 
+      line 0x  ->  "                                                                                                                             Exit    "
+      line 1x  ->  "                                                                                                                                     "
+      line 2x  ->  " Backend_Day2/                             |  Info                                |   Preview                                       |"
+      line 3x  ->  "       |- bin/                             |                                      |                                                 |"
+      line 4x  ->  "       |- classes/                         |                                      |                                                 |"
+      line 5x  ->  "       |- obj/                             |                                      |                                                 |"
+      line 6x  ->  "       |- .gitignore                       |                                      |                                                 |"
+      line 7x  ->  " >     |- Backend_Day2.csproj              |  Name: Backend_Day2.csproj           |  <Project Sdk="Microsoft.NET.Sdk">              |"
+      line 8x  ->  "       |- Backend_Day2.sln                 |  Type: C# project                    |                                                 |"
+      line 9x  ->  "       |- command.txt                      |  Extension: .csproj                  |    <PropertyGroup>                              |"
+      line 10x ->  "       |- commands.md                      |  Size: 250 B                         |      <OutputType>Exe</OutputType>               |"
+      line 11x ->  "       |- my_document.txt                  |  Created: 28.10.2025 11:23           |      <TargetFramework>net9.0</TargetFramework>  |"
+      line 12x ->  "       |- Program.cs                       |  Path: C:\Users\borge\               |      <ImplicitUsings>enable</ImplicitUsings>    |"
+      line 13x ->  "       |- README.md                        |        Documents\GitHub\             |      <Nullable>enable</Nullable>                |"
+      line 14x ->  "       |- TODO.md                          |        kodehode\Kartlegging\         |    </PropertyGroup>                             |"
+      line 15x ->  "                                           |        C#\Backend_Day2\              |                                                 |"
+      line 16x ->  "                                           |        Backend_Day2.csproj           |  </Project>                                     |"
+      line 17x ->  "                                                                                                                                     "
+
+   this is how it should look like: 
+      line 0x  ->  "                                                                                                                             Exit    "
+      line 1x  ->  "                                                                                                                                     "
+      line 2x  ->  " Backend_Day2/                             |  Info                                |   Preview                                       |"
+      line 3x  ->  "       |- bin/                             |                                      |                                                 |"
+      line 4x  ->  "       |- classes/                         |  Name: Backend_Day2.csproj           |  <Project Sdk="Microsoft.NET.Sdk">              |"
+      line 5x  ->  "       |- obj/                             |  Type: C# project                    |                                                 |"
+      line 6x  ->  "       |- .gitignore                       |  Extension: .csproj                  |    <PropertyGroup>                              |"
+      line 7x  ->  " >     |- Backend_Day2.csproj              |  Size: 250 B                         |      <OutputType>Exe</OutputType>               |"
+      line 8x  ->  "       |- Backend_Day2.sln                 |  Created: 28.10.2025 11:23           |      <TargetFramework>net9.0</TargetFramework>  |"
+      line 9x  ->  "       |- command.txt                      |  Path: C:\Users\borge\               |      <ImplicitUsings>enable</ImplicitUsings>    |"
+      line 10x ->  "       |- commands.md                      |        Documents\GitHub\             |      <Nullable>enable</Nullable>                |"
+      line 11x ->  "       |- my_document.txt                  |        kodehode\Kartlegging\         |    </PropertyGroup>                             |"
+      line 12x ->  "       |- Program.cs                       |        C#\Backend_Day2\              |                                                 |"
+      line 13x ->  "       |- README.md                        |        Backend_Day2.csproj           |  </Project>                                     |"
+      line 14x ->  "       |- TODO.md                          |                                      |                                                 |"
+      line 15x ->  "                                           |                                      |                                                 |"
+      line 16x ->  "                                                                                                                                     "
+
+
+
+
+
+3) there are not space between 
+      ">     |- DirCommand.cs           |                                |                              " 
+      and 
+      "classes/                         |  Info                          |  Preview                     ".
+
+4) the Exit-button should look like "Exit" when it is not being highlighted, and not like this "[  Exit  ]". It should look like this "[  Exit  ]" when it is being highlighted. 
+
+
+5) it is also missing "Back" button. The button is still there and useable but it is not visible in the console. (overflowing)
+
+6) you still have not removed the old preview-open-close section, for when you select a dir.
+      when you select dir, are are met with this: 
+            "
+            ___Dir Info______________________
+
+            Name: classes
+            Type: Directory
+            Extension: /
+            Size: 34,87 KB
+            Created: 28.10.2025 09:40:28
+            Length: 11
+
+            ---------------------------------
+                        preview
+            ---------------------------------
+            [  open ]        back
+            ---------------------------------
+            "
+            this is old and should be removed. 
+
+      When you select a dir, it should just open the dir. .i.g. lets say in "Backend_Day2/" you selected "classes/" it should take you here: 
+            "
+            [  Back  ]                                                                                                                [  Exit  ]  
+                                                                                                                                                
+            Backend_Day2/                             |  Info                                |   Preview                                       |
+                  |- bin/                             |                                      |                                                 |
+                  |- classes/                         |  Name: DirCommand.cs                 |  using System.IO; // Add this at the top        |
+                  |- obj/                             |  Type: cs                            |  public class DirCommand                        |
+                  |- .gitignore                       |  Extension: .cs                      |  {                                              |
+            >     |- Backend_Day2.csproj              |  Size: 1,72 KB                       |                                                 |
+                  |- Backend_Day2.sln                 |  Created: 30.10.2025 09:24:17        |      // FileInfo? info; //? dont think i ne...  |
+                  |- command.txt                      |  Path: C:\Users\borge\               |                                                 |
+                  |- commands.md                      |        Documents\GitHub\             |      public void PrintDirInformation(string...  |
+                  |- my_document.txt                  |        kodehode\Kartlegging\         |      {                                          |
+                  |- Program.cs                       |        C#\Backend_Day2\              |          // Prints folder/dir info              |
+                  |- README.md                        |        classes\DirCommand.cs         |          var dirInfo = new DirectoryInfo(na...  |
+                  |- TODO.md                          |                                      |  . . .                                          |
+                                                      |                                      |                                                 |
+            "                                                                                                                                   

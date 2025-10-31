@@ -1,5 +1,4 @@
 using System.IO; // Add this at the top
-using Microsoft.Win32;
 public class InputHandler
 {
 
@@ -34,60 +33,10 @@ public class InputHandler
         // will check if name == dir or file
         if (Directory.Exists(name))
         {
-            // is DIR -> redirect to dirCommand
-            GetUserSelect getUserSelect = new GetUserSelect();
-            DirAction selectedDirAction = getUserSelect.SelectDirAction(name);
-
-            var dirCommand = new DirCommand();
-
-            switch (selectedDirAction)
-            {
-                case DirAction.Open:
-                    // push current directory to history and change current directory to chosen directory
-                    Navigation.Push(Environment.CurrentDirectory);
-                    Environment.CurrentDirectory = name;
-                    return;
-
-                case DirAction.Back:
-                    // use navigation history to go back if available
-                    if (Navigation.CanGoBack())
-                    {
-                        var prev = Navigation.GoBack();
-                        if (!string.IsNullOrEmpty(prev))
-                        {
-                            Environment.CurrentDirectory = prev;
-                        }
-                    }
-                    else
-                    {
-                        // fallback: go to parent dir if history empty
-                        var parent = Directory.GetParent(Environment.CurrentDirectory);
-                        if (parent != null)
-                        {
-                            Environment.CurrentDirectory = parent.FullName;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Already at root directory.");
-                            Console.WriteLine("Press any key to continue...");
-                            Console.ReadKey(true);
-                        }
-                    }
-                    return;
-
-                case DirAction.Preview:
-                    // print info + preview and wait for user key before returning to selection loop
-                    dirCommand.PrintDirInformation(name);
-                    Console.WriteLine();
-                    Console.WriteLine("___Preview_______________________\n");
-                    dirCommand.PrintDirPreview(name);
-                    Console.WriteLine("\nPress any key to continue...");
-                    Console.ReadKey(true);
-                    return;
-
-                default:
-                    return;
-            }
+            // push current directory to history and change current directory to chosen directory
+            Navigation.Push(Environment.CurrentDirectory);
+            Environment.CurrentDirectory = name;
+            return;
         }
         if (File.Exists(name))
         {

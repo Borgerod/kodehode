@@ -3,407 +3,568 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public enum DirAction { Preview, Open, Back }
-// public enum DirAction { Open, Back }
 public class GetUserSelect
 {
     private readonly SelectionTool selectionTool = new SelectionTool();
 
-public string SelectFileName()
-{
-    string currentDir = Directory.GetCurrentDirectory();
-    List<string> paths = new List<string>();
+    private sealed record Entry(string Path, string Name, bool IsDirectory, string Display);
 
-    // Get folders first, then files
-    paths.AddRange(Directory.GetDirectories(currentDir));
-    paths.AddRange(Directory.GetFiles(currentDir));
-
-    // even if empty, we still show Exit (header action)
-    var items = paths.Select(path =>
+    public string SelectFileName()
     {
-        string name = Path.GetFileName(path);
-        bool isDir = Directory.Exists(path);
-        string displayName = isDir ? $"  |- {name}/" : $"  |- {name}";
-        return (Path: path, Name: name, IsFolder: isDir, Display: displayName);
-    }).ToList();
+        string currentDir = Directory.GetCurrentDirectory();
+        var entries = GatherEntries(currentDir);
 
-    // header has either [back, Exit] or [Exit] depending on history
-    int headerCount = Navigation.CanGoBack() ? 2 : 1;
+        int headerCount = Navigation.CanGoBack() ? 2 : 1;
 
-    // finalItems: filesystem entries (the selection tool will reserve headerCount slots at the start)
-    var finalItems = new List<(string Path, string Name, bool IsFolder, string Display)>();
-    finalItems.AddRange(items);
+        Action<int> render = selectedIndex =>
+        {
+            RenderLayout(currentDir, entries, selectedIndex, headerCount);
+        };
 
-    // header renderer: selectedIndex is combined index:
-    //   0..headerCount-1 => header sub-buttons
-    //   headerCount.. => entries (header not selected)
-    Action<int> renderHeader = (selectedIndex) =>
-    {
-    // Simple, reliable inline rendering without cursor positioning.
-    // This mirrors the working style used for the [ open ] / back header.
+        int startIndex = entries.Count > 0 ? headerCount : 0;
+        int selectedIndex = selectionTool.Select(entries, e => e.Display, render, initialIndex: startIndex, headerSelectable: true, headerItemCount: headerCount, renderWholeArea: true);
 
-        // Define inner labels (keep inner length equal so button sizes stay fixed)
-        const string backInner = "  Back  "; // 8 chars
-        const string exitInner = "  Exit  "; // 8 chars
-
-        // Rendered forms: selected shows brackets around inner, unselected shows padded inner
-        string leftSelected = $"[{backInner}]";   // length 10
-        string leftUnselected = $" {backInner} "; // length 10
-        string rightSelected = $"[{exitInner}]";  // length 10
-        string rightUnselected = $" {exitInner} "; // length 10
-
-        string leftRender, rightRender;
+        if (selectedIndex < headerCount)
+        {
             if (Navigation.CanGoBack())
-            {
-            leftRender = selectedIndex == 0 ? leftSelected : leftUnselected;
-            rightRender = selectedIndex == 1 ? rightSelected : rightUnselected;
-
-            // Compute spacing so right button anchors to right edge and doesn't wrap.
-            int consoleWidth;
-            try { consoleWidth = Console.WindowWidth; } catch { consoleWidth = 80; }
-
-            int leftCol = 0; // start at column 0 as requested
-            // anchor right button to the right, leave 1-column margin
-            int rightCol = Math.Max(0, consoleWidth - rightRender.Length - 1);
-
-            // prepare a line buffer of consoleWidth (if too small, length at least rightRender length)
-            int lineLength = Math.Max(consoleWidth, rightCol + rightRender.Length);
-            var lineChars = new char[lineLength];
-            for (int i = 0; i < lineChars.Length; i++) lineChars[i] = ' ';
-
-            // copy left into buffer
-            for (int i = 0; i < leftRender.Length && leftCol + i < lineChars.Length; i++) lineChars[leftCol + i] = leftRender[i];
-            // copy right into buffer (this will overwrite if overlapping — keeps Exit intact)
-            for (int i = 0; i < rightRender.Length && rightCol + i < lineChars.Length; i++) lineChars[rightCol + i] = rightRender[i];
-
-            string full = new string(lineChars);
-
-            // If buttons do not overlap, color only the selected segment cleanly using substrings
-            if (leftCol + leftRender.Length <= rightCol)
             {
                 if (selectedIndex == 0)
                 {
-                    Console.Write(full.Substring(0, leftCol));
-                    Console.BackgroundColor = ConsoleColor.DarkBlue;
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write(full.Substring(leftCol, leftRender.Length));
-                    Console.ResetColor();
-                    Console.Write(full.Substring(leftCol + leftRender.Length));
-                    Console.WriteLine();
+                    return Navigation.TokenBack;
                 }
-                else if (selectedIndex == 1)
-                {
-                    Console.Write(full.Substring(0, rightCol));
-                    Console.BackgroundColor = ConsoleColor.DarkBlue;
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write(full.Substring(rightCol, rightRender.Length));
-                    Console.ResetColor();
-                    Console.Write(full.Substring(rightCol + rightRender.Length));
-                    Console.WriteLine();
-                }
-                else
-                {
-                    Console.WriteLine(full);
-                }
+                Console.Clear();
+                return Navigation.TokenExit;
             }
-            else
-            {
-                // Overlap case: fallback to sequential printing to guarantee Exit stays at right — print left then reposition and print right replacing overlap
-                // Print left (possibly partially overwritten later)
-                Console.Write(leftRender);
-                // compute spaces until rightCol
-                int curPos = leftRender.Length;
-                if (rightCol > curPos)
-                    Console.Write(new string(' ', rightCol - curPos));
-                // print right with coloring if selected
-                if (selectedIndex == 1)
-                {
-                    Console.BackgroundColor = ConsoleColor.DarkBlue;
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write(rightRender);
-                    Console.ResetColor();
-                }
-                else
-                {
-                    Console.Write(rightRender);
-                }
-                Console.WriteLine();
-            }
-        }
-        else
-        {
-            // Only Exit button (right aligned)
-            rightRender = selectedIndex == 0 ? rightSelected : rightUnselected;
-            int consoleWidth;
-            try { consoleWidth = Console.WindowWidth; } catch { consoleWidth = 80; }
-            int rightCol = Math.Max(3, consoleWidth - rightRender.Length - 3);
-            string line = new string(' ', rightCol) + rightRender;
-            if (selectedIndex == 0)
-            {
-                int before = rightCol;
-                Console.Write(line.Substring(0, before));
-                Console.BackgroundColor = ConsoleColor.DarkBlue;
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(line.Substring(before, rightRender.Length));
-                Console.ResetColor();
-                Console.WriteLine();
-            }
-            else
-            {
-                Console.WriteLine(line);
-            }
-        }
 
-    Console.WriteLine();
-        // print directory name under the action bar (no stray 'n')
-        Console.WriteLine($"{Path.GetFileName(currentDir)}/");
-        Console.WriteLine();
-    };
-
-    // start focus on first real item (combined index = headerCount)
-    int startIndex = finalItems.Count > 0 ? headerCount : 0;
-
-    // call select with headerItemCount so header occupies headerCount selectable slots (0..headerCount-1)
-    int selectedIndex = selectionTool.Select(finalItems, item => item.Display, renderHeader, initialIndex: startIndex, horizontal: false, headerSelectable: true, headerItemCount: headerCount);
-
-    // if a header slot was selected -> map directly to token (no secondary selector)
-    if (selectedIndex < headerCount)
-    {
-        // when headerCount==2 and history exists: 0 => Back, 1 => Exit
-        if (Navigation.CanGoBack())
-        {
-            if (selectedIndex == 0)
-                return Navigation.TokenBack;
-            // Exit selected: clear console before returning
             Console.Clear();
             return Navigation.TokenExit;
         }
-        // when only Exit exists (headerCount==1) -> clear console then return
+
+        var chosen = entries[selectedIndex - headerCount];
         Console.Clear();
-        return Navigation.TokenExit;
+        Console.WriteLine($"You selected: {chosen.Name}{(chosen.IsDirectory ? "/" : string.Empty)}");
+        return chosen.Path;
     }
 
-    // user selected a real item (map combined selectedIndex -> list index)
-    var selected = finalItems[selectedIndex - headerCount];
-
-    Console.Clear();
-    Console.WriteLine($"You selected: {selected.Name}{(selected.IsFolder ? "/" : string.Empty)}");
-
-    // return the actual path
-    return selected.Path;
-}
-    public DirAction SelectDirAction(string name)
+    private static List<Entry> GatherEntries(string currentDir)
     {
-        //* Choice for when selected file is a dir/ --> what to do: (open dir) or (print info+content)
-        var dirCommand = new DirCommand();
-
-        // show a selectable header "preview" and only Open/Back as the selectable entries (horizontal)
-        var actions = new List<DirAction> { DirAction.Open, DirAction.Back };
-
-                Action<int> renderHeader = (selectedIdx) =>
+        var items = new List<Entry>();
+        try
         {
-            dirCommand.PrintDirInformation(name);
-            Console.WriteLine();
-
-            // preview area (centered-ish). when selectedIdx == 0 the header is selected
-            Console.WriteLine("---------------------------------");
-
-            // write leading spaces uncolored, color only the bracketed label
-            string preview_label = "   preview   ";
-            string indent = "         ";
-            Console.Write($"{indent}");
-            if (selectedIdx == 0)
+            foreach (var path in Directory.GetDirectories(currentDir))
             {
-                Console.BackgroundColor = ConsoleColor.DarkBlue;
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write($"[{preview_label}]");
-                Console.ResetColor();
+                string name = Path.GetFileName(path);
+                items.Add(new Entry(path, name, true, $"  |- {name}/"));
+            }
+        }
+        catch { }
+
+        try
+        {
+            foreach (var path in Directory.GetFiles(currentDir))
+            {
+                string name = Path.GetFileName(path);
+                items.Add(new Entry(path, name, false, $"  |- {name}"));
+            }
+        }
+        catch { }
+
+        return items;
+    }
+
+    private static void RenderLayout(string currentDir, IReadOnlyList<Entry> entries, int selectedIndex, int headerCount)
+    {
+    int consoleWidth;
+    try { consoleWidth = Console.WindowWidth; } catch { consoleWidth = 120; }
+    if (consoleWidth < 60) consoleWidth = 60; // keep minimal width to avoid negative spacing
+    int layoutWidth = Math.Max(40, consoleWidth - 1); // leave one column margin to avoid wrap
+
+        // ensure background/foreground reset before drawing
+        Console.ResetColor();
+
+        bool showBack = Navigation.CanGoBack();
+        int exitIndex = showBack ? 1 : 0;
+        bool backSelected = showBack && selectedIndex == 0;
+        bool exitSelected = selectedIndex == exitIndex;
+
+    const string backDisplay = "[  Back  ]";
+    const string exitDisplay = "[  Exit  ]";
+    string backLabel = showBack ? backDisplay : string.Empty;
+    string exitLabel = exitDisplay;
+
+    WriteHeaderLine(layoutWidth, showBack, backLabel, exitLabel, backSelected, exitSelected);
+
+        string directoryName = Path.GetFileName(currentDir) + "/";
+    const int separatorWidth = 6; // two " | " separators
+    int contentWidth = Math.Max(24 + 24 + 20, layoutWidth - separatorWidth);
+
+    int leftWidth = Math.Max(24, contentWidth / 3);
+    int infoWidth = Math.Max(24, contentWidth / 3);
+    int previewWidth = Math.Max(20, contentWidth - leftWidth - infoWidth);
+    previewWidth = Math.Max(12, previewWidth - 6); // make preview column thinner without growing others
+
+        // ensure combined width including separators fits within console
+        void ClampWidths()
+        {
+            int total = leftWidth + infoWidth + previewWidth;
+            if (total <= contentWidth)
+            {
+                return;
+            }
+
+            int overflow = total - contentWidth;
+
+            // shrink preview first (down to a reasonable minimum)
+            int previewMin = 12;
+            if (previewWidth > previewMin)
+            {
+                int reduce = Math.Min(overflow, previewWidth - previewMin);
+                previewWidth -= reduce;
+                overflow -= reduce;
+            }
+
+            if (overflow > 0 && infoWidth > 16)
+            {
+                int reduce = Math.Min(overflow, infoWidth - 16);
+                infoWidth -= reduce;
+                overflow -= reduce;
+            }
+
+            if (overflow > 0 && leftWidth > 16)
+            {
+                int reduce = Math.Min(overflow, leftWidth - 16);
+                leftWidth -= reduce;
+                overflow -= reduce;
+            }
+
+            // final guard: if overflow still remains, shave equally from columns where possible
+            while (overflow > 0)
+            {
+                bool adjusted = false;
+                if (previewWidth > 10)
+                {
+                    previewWidth--;
+                    overflow--;
+                    adjusted = true;
+                }
+                if (overflow > 0 && infoWidth > 12)
+                {
+                    infoWidth--;
+                    overflow--;
+                    adjusted = true;
+                }
+                if (overflow > 0 && leftWidth > 12)
+                {
+                    leftWidth--;
+                    overflow--;
+                    adjusted = true;
+                }
+                if (!adjusted)
+                {
+                    // nothing else we can trim safely
+                    break;
+                }
+            }
+        }
+
+        ClampWidths();
+
+    PrintCell(directoryName, leftWidth);
+    Console.Write(" | ");
+    PrintCell("  Info", infoWidth);
+    Console.Write(" | ");
+    PrintCell("  Preview", previewWidth);
+        Console.WriteLine();
+
+            var selectedEntry = GetSelectedEntry(entries, selectedIndex, headerCount);
+
+            var leftLines = BuildLeftLines(entries, selectedEntry);
+            var infoLines = BuildInfoLines(selectedEntry, infoWidth);
+
+            int targetRows = Math.Max(leftLines.Count, infoLines.Count);
+            var previewLines = BuildPreviewLines(selectedEntry, targetRows, previewWidth);
+
+            targetRows = Math.Max(targetRows, previewLines.Count);
+
+            NormalizeLength(leftLines, targetRows);
+            NormalizeLength(infoLines, targetRows);
+            NormalizeLength(previewLines, targetRows);
+
+            int selectedEntryIndex = selectedIndex - headerCount;
+            int selectedRow = selectedEntryIndex >= 0 ? 1 + selectedEntryIndex : -1; // line index in leftLines corresponding to selected entry
+
+            for (int i = 0; i < targetRows; i++)
+            {
+                PrintCell(leftLines[i], leftWidth, highlight: i == selectedRow);
+                Console.Write(" | ");
+                PrintCell(infoLines[i], infoWidth);
+                Console.Write(" | ");
+                PrintCell(previewLines[i], previewWidth);
                 Console.WriteLine();
+            }
+    }
+
+    private static Entry? GetSelectedEntry(IReadOnlyList<Entry> entries, int selectedIndex, int headerCount)
+    {
+        int entryIndex = selectedIndex - headerCount;
+        if (entryIndex >= 0 && entryIndex < entries.Count)
+        {
+            return entries[entryIndex];
+        }
+        return null;
+    }
+
+    private static List<string> BuildLeftLines(IReadOnlyList<Entry> entries, Entry? selectedEntry)
+    {
+        var lines = new List<string> { string.Empty };
+        foreach (var entry in entries)
+        {
+            bool isSelected = selectedEntry != null && ReferenceEquals(entry, selectedEntry);
+            string prefix = isSelected ? ">     |- " : "      |- ";
+            string name = entry.Name + (entry.IsDirectory ? "/" : string.Empty);
+            lines.Add(prefix + name);
+        }
+
+        if (lines.Count == 1)
+        {
+            lines.Add(string.Empty);
+        }
+
+        return lines;
+    }
+
+    private static List<string> BuildInfoLines(Entry? entry, int width)
+    {
+        var lines = new List<string> { string.Empty };
+        if (entry == null)
+        {
+            return lines;
+        }
+
+        try
+        {
+            if (entry.IsDirectory)
+            {
+                var info = new DirectoryInfo(entry.Path);
+                string extension = "/";
+                long size = GetDirectorySizeSafe(entry.Path);
+                int itemCount = GetDirectoryItemCountSafe(entry.Path);
+
+                lines.Add($"Name: {info.Name}");
+                lines.Add("Type: Directory");
+                lines.Add($"Extension: {extension}");
+                lines.Add($"Size: {FileCommand.GetReadableFileSize(size)}");
+                lines.Add($"Created: {info.CreationTime:g}");
+                foreach (var wrapped in WrapPath(info.FullName, width))
+                {
+                    lines.Add(wrapped);
+                }
+                lines.Add($"Length: {itemCount}");
             }
             else
             {
-                // keep alignment identical when not selected
-                Console.WriteLine($" {preview_label} ");
+                var info = new FileInfo(entry.Path);
+                string extension = info.Extension;
+                string typeDescription = FileCommand.GetFileTypeDescription(extension);
+
+                lines.Add($"Name: {info.Name}");
+                lines.Add($"Type: {typeDescription}");
+                lines.Add($"Extension: {extension}");
+                lines.Add($"Size: {FileCommand.GetReadableFileSize(info.Length)}");
+                lines.Add($"Created: {info.CreationTime:g}");
+                foreach (var wrapped in WrapPath(info.FullName, width))
+                {
+                    lines.Add(wrapped);
+                }
             }
-
-            Console.WriteLine("---------------------------------");
-        };
-
-        // headerCount == 1 (preview) so combined indices: 0 => preview, 1 => open, 2 => back
-        int sel = selectionTool.Select(actions, action => $" {action.ToString().ToLowerInvariant()}", renderHeader, initialIndex: 1, horizontal: true, headerSelectable: true, headerItemCount: 1);
-
-        // when header (0) chosen => show detailed preview, then show open/back (horizontal) while keeping preview visible
-        if (sel == 0)
+        }
+        catch
         {
-            // show preview and then present bottom choices; bottomHeader must render preview content so it survives Console.Clear()
-            Action<int> bottomHeader = (idx) =>
-            {
-                dirCommand.PrintDirInformation(name);
-                Console.WriteLine();
-                Console.WriteLine("___Preview_______________________\n");
-                dirCommand.PrintDirPreview(name); // print preview inside header so it's visible while selection loops
-                Console.WriteLine("\n---------------------------------");
-            };
-
-            var bottom = new List<DirAction> { DirAction.Open, DirAction.Back };
-            int bottomIndex = selectionTool.Select(bottom, a => $" {a.ToString().ToLowerInvariant()}", bottomHeader, initialIndex: 0, horizontal: true);
-            Console.Clear();
-            return bottom[bottomIndex];
+            lines.Add("(info unavailable)");
         }
 
-        // otherwise sel maps to actions[sel - headerCount] because header was selectable at indices 0..headerCount-1 (here headerCount==1)
-        Console.Clear();
-        return actions[sel - 1];
+        return lines;
     }
-    public DirAction SelectPreviewDirAction()
+
+    private static List<string> BuildPreviewLines(Entry? entry, int targetRows, int width)
     {
-        //* Choice for when selected file is a dir/ --> what to do: (open dir) or (print info/content)
-
-        var actions = new List<DirAction> { DirAction.Open, DirAction.Back };
-
-        Action<int> renderHeader = (idx) =>
+        var lines = new List<string> { string.Empty };
+        if (entry == null || targetRows <= 1)
         {
-            Console.WriteLine("Choose what to do:");
-            Console.WriteLine();
-        };
+            return lines;
+        }
 
-        // int selectedIndex = selectionTool.Select(actions, action => action.ToString().ToLowerInvariant(), renderHeader);
-        int selectedIndex = selectionTool.Select(actions, action => $"  {action.ToString().ToLowerInvariant()}", renderHeader);
-        DirAction selectedAction = actions[selectedIndex];
+        int remaining = targetRows - 1;
 
-        Console.Clear();
-        return selectedAction;
+        try
+        {
+            if (entry.IsDirectory)
+            {
+                var dirInfo = new DirectoryInfo(entry.Path);
+                lines.Add(entry.Name + "/");
+
+                remaining = targetRows - lines.Count;
+                if (remaining <= 0)
+                {
+                    return lines;
+                }
+
+                var children = dirInfo.GetDirectories().Cast<FileSystemInfo>()
+                    .Concat(dirInfo.GetFiles().Cast<FileSystemInfo>())
+                    .ToList();
+
+                int rendered = 0;
+                foreach (var child in children)
+                {
+                    string label = $"  |- {child.Name}{(child is DirectoryInfo ? "/" : string.Empty)}";
+                    lines.Add(label);
+                    rendered++;
+                    if (lines.Count >= targetRows)
+                    {
+                        break;
+                    }
+                }
+
+                if (rendered < children.Count && lines.Count == targetRows)
+                {
+                    lines[targetRows - 1] = "  . . .";
+                }
+            }
+            else
+            {
+                using var reader = new StreamReader(entry.Path);
+                int lineNumber = 0;
+                while (!reader.EndOfStream && lines.Count < targetRows)
+                {
+                    string? raw = reader.ReadLine();
+                    raw ??= string.Empty;
+                    lines.Add("  " + raw);
+                    lineNumber++;
+                }
+
+                if (!reader.EndOfStream && lines.Count == targetRows)
+                {
+                    lines[targetRows - 1] = "  . . .";
+                }
+            }
+        }
+        catch
+        {
+            if (lines.Count < targetRows)
+            {
+                lines.Add("  (preview unavailable)");
+            }
+        }
+
+        return lines;
+    }
+
+    private static void NormalizeLength(List<string> lines, int target)
+    {
+        if (lines.Count > target)
+        {
+            lines.RemoveRange(target, lines.Count - target);
+        }
+        while (lines.Count < target)
+        {
+            lines.Add(string.Empty);
+        }
+    }
+
+    private static string PadOrClip(string text, int width)
+    {
+        if (width <= 0)
+        {
+            return string.Empty;
+        }
+
+        text ??= string.Empty;
+        if (text.Length <= width)
+        {
+            return text.PadRight(width);
+        }
+
+        if (width <= 3)
+        {
+            return text.Substring(0, width);
+        }
+
+        return text.Substring(0, width - 3) + "...";
+    }
+
+    private static void PrintCell(string text, int width, bool highlight = false)
+    {
+    string cleaned = NormalizeCellText(text);
+    string cell = PadOrClip(cleaned, width);
+        if (highlight)
+        {
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(cell);
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.Write(cell);
+        }
+    }
+
+    private static string NormalizeCellText(string? text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return string.Empty;
+        }
+
+        Span<char> buffer = text.ToCharArray();
+        for (int i = 0; i < buffer.Length; i++)
+        {
+            char c = buffer[i];
+            if (c == '\t')
+            {
+                buffer[i] = ' ';
+            }
+            else if (char.IsControl(c) && c != '\n' && c != '\r')
+            {
+                buffer[i] = ' ';
+            }
+        }
+
+        return new string(buffer);
+    }
+
+    private static IEnumerable<string> WrapPath(string fullPath, int width)
+    {
+        const string prefix = "Path: ";
+        var lines = new List<string>();
+
+        if (width <= 0)
+        {
+            lines.Add(string.Empty);
+            return lines;
+        }
+
+        if (string.IsNullOrEmpty(fullPath))
+        {
+            lines.Add(PadOrClip(prefix, width));
+            lines.Add(string.Empty);
+            return lines;
+        }
+
+        if (width <= prefix.Length + 1)
+        {
+            lines.Add(PadOrClip(prefix + fullPath, width));
+            lines.Add(string.Empty);
+            return lines;
+        }
+
+        string normalized = fullPath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+        string indent = new string(' ', prefix.Length);
+        string current = prefix;
+
+        foreach (char rawChar in normalized)
+        {
+            char ch = rawChar;
+
+            if (current.Length + 1 > width)
+            {
+                lines.Add(current);
+                current = indent;
+            }
+
+            current += ch;
+        }
+
+        if (current.Trim().Length > 0)
+        {
+            lines.Add(current);
+        }
+
+        lines.Add(string.Empty);
+        return lines;
+    }
+
+    private static void WriteHeaderLine(int consoleWidth, bool showBack, string backLabel, string exitLabel, bool backSelected, bool exitSelected)
+    {
+        int width = Math.Max(1, consoleWidth);
+        string backRender = showBack ? FitLabel(backLabel, width) : string.Empty;
+        string exitRender = FitLabel(exitLabel, width);
+
+        int headerRow = Console.CursorTop;
+        Console.SetCursorPosition(0, headerRow);
+        Console.Write(new string(' ', width));
+
+        if (showBack && backRender.Length > 0)
+        {
+            Console.SetCursorPosition(0, headerRow);
+            WriteHeaderLabel(backRender, backSelected);
+        }
+
+        int exitStart = Math.Max(0, width - exitRender.Length);
+        Console.SetCursorPosition(exitStart, headerRow);
+        WriteHeaderLabel(exitRender, exitSelected);
+
+        Console.SetCursorPosition(0, headerRow + 1);
+        Console.WriteLine();
+    }
+
+    private static void WriteHeaderLabel(string text, bool highlight)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return;
+        }
+
+        if (highlight)
+        {
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(text);
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.Write(text);
+        }
+    }
+
+    private static string FitLabel(string label, int maxWidth)
+    {
+        if (maxWidth <= 0 || string.IsNullOrEmpty(label))
+        {
+            return string.Empty;
+        }
+
+        if (label.Length <= maxWidth)
+        {
+            return label;
+        }
+
+        return label.Substring(0, maxWidth);
+    }
+
+    private static long GetDirectorySizeSafe(string path)
+    {
+        try
+        {
+            return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+                .Sum(file => new FileInfo(file).Length);
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private static int GetDirectoryItemCountSafe(string path)
+    {
+        try
+        {
+            return new DirectoryInfo(path).GetFileSystemInfos().Length;
+        }
+        catch
+        {
+            return 0;
+        }
     }
 }
-// using System;
-// using System.Collections.Generic;
-// using System.IO;
-// using System.Linq;
-
-// public enum DirAction { Preview, Open, Back }
-// // public enum DirAction { Open, Back }
-// public class GetUserSelect
-// {
-//     private readonly SelectionTool selectionTool = new SelectionTool();
-
-//     public string SelectFileName()
-//     {
-//         string currentDir = Directory.GetCurrentDirectory();
-//         List<string> paths = new List<string>();
-
-//         // Get folders first, then files
-//         paths.AddRange(Directory.GetDirectories(currentDir));
-//         paths.AddRange(Directory.GetFiles(currentDir));
-
-//         if (paths.Count == 0)
-//         {
-//             Console.WriteLine("No files or folders found in this directory.");
-//             return string.Empty;
-//         }
-
-//         var items = paths.Select(path =>
-//         {
-//             string name = Path.GetFileName(path);
-//             bool isDir = Directory.Exists(path);
-//             string displayName = isDir ? $"  |- {name}/" : $"  |- {name}";
-//             return (Path: path, Name: name, IsFolder: isDir, Display: displayName);
-//         }).ToList();
-
-//         Action<int> renderHeader = (selectedIndex) =>
-//         {
-//             Console.WriteLine("Current Directory:\n");
-//             Console.WriteLine($"{Path.GetFileName(currentDir)}/n");
-//         };
-
-//         int selectedIndex = selectionTool.Select(items, item => item.Display, renderHeader);
-//         var selected = items[selectedIndex];
-
-//         Console.Clear();
-//         Console.WriteLine($"You selected: {selected.Name}{(selected.IsFolder ? "/" : string.Empty)}");
-
-//         // return full path (not tuple)
-//         return selected.Path;
-//     }
-//     public DirAction SelectDirAction(string name)
-//     {
-//         //* Choice for when selected file is a dir/ --> what to do: (open dir) or (print info+content)
-//         var dirCommand = new DirCommand();
-
-//         // show a selectable header "preview" and only Open/Back as the selectable entries (horizontal)
-//         var actions = new List<DirAction> { DirAction.Open, DirAction.Back };
-
-//                 Action<int> renderHeader = (selectedIdx) =>
-//         {
-//             dirCommand.PrintDirInformation(name);
-//             Console.WriteLine();
-
-//             // preview area (centered-ish). when selectedIdx == 0 the header is selected
-//             Console.WriteLine("---------------------------------");
-
-//             // write leading spaces uncolored, color only the bracketed label
-//             string preview_label = "   preview   ";
-//             string indent = "         ";
-//             Console.Write($"{indent}");
-//             if (selectedIdx == 0)
-//             {
-//                 Console.BackgroundColor = ConsoleColor.DarkBlue;
-//                 Console.ForegroundColor = ConsoleColor.White;
-//                 Console.Write($"[{preview_label}]");
-//                 Console.ResetColor();
-//                 Console.WriteLine();
-//             }
-//             else
-//             {
-//                 // keep alignment identical when not selected
-//                 Console.WriteLine($" {preview_label} ");
-//             }
-
-//             Console.WriteLine("---------------------------------");
-//         };
-
-//         // initialIndex: 1 -> default focus on "open"; headerSelectable: true so header is selectable as index 0
-//         int sel = selectionTool.Select(actions, action => $" {action.ToString().ToLowerInvariant()}", renderHeader, initialIndex: 1, horizontal: true, headerSelectable: true);
-
-//         // when header (0) chosen => show detailed preview, then show open/back (horizontal) while keeping preview visible
-//         if (sel == 0)
-//         {
-//             // show preview and then present bottom choices; bottomHeader must render preview content so it survives Console.Clear()
-//             Action<int> bottomHeader = (idx) =>
-//             {
-//                 dirCommand.PrintDirInformation(name);
-//                 Console.WriteLine();
-//                 Console.WriteLine("___Preview_______________________\n");
-//                 dirCommand.PrintDirPreview(name); // print preview inside header so it's visible while selection loops
-//                 Console.WriteLine("\n---------------------------------");
-//             };
-
-//             var bottom = new List<DirAction> { DirAction.Open, DirAction.Back };
-//             int bottomIndex = selectionTool.Select(bottom, a => $" {a.ToString().ToLowerInvariant()}", bottomHeader, initialIndex: 0, horizontal: true);
-//             Console.Clear();
-//             return bottom[bottomIndex];
-//         }
-
-//         // otherwise sel maps to actions[sel-1] because header was selectable at index 0
-//         Console.Clear();
-//         return actions[sel - 1];
-//     }
-//     public DirAction SelectPreviewDirAction()
-//     {
-//         //* Choice for when selected file is a dir/ --> what to do: (open dir) or (print info/content)
-
-//         var actions = new List<DirAction> { DirAction.Open, DirAction.Back };
-
-//         Action<int> renderHeader = (idx) =>
-//         {
-//             Console.WriteLine("Choose what to do:");
-//             Console.WriteLine();
-//         };
-
-//         // int selectedIndex = selectionTool.Select(actions, action => action.ToString().ToLowerInvariant(), renderHeader);
-//         int selectedIndex = selectionTool.Select(actions, action => $"  {action.ToString().ToLowerInvariant()}", renderHeader);
-//         DirAction selectedAction = actions[selectedIndex];
-
-//         Console.Clear();
-//         return selectedAction;
-//     }
-// }
