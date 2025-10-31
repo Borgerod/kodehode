@@ -1,0 +1,7 @@
+STRUCTURE MAPS:
+    These are three visialisations of the options for 
+    how i envisioned the app would look like / behave like.
+
+    OPTION 1 - [old]
+    OPTION 2 - [old]
+    OPTION 3 - [represents the current build]
