@@ -20,13 +20,17 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+			<body 
+				className={`@container/main ${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-[url('/assets/images/background.jpg')] bg-cover bg-center flex flex-row items-center justify-center`}>
 				{children}
 			</body>
 		</html>
-	);
+	);		
+
 }
+
+//  gap-8
+
 // ...existing code...// import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 // // import "./globals.css";
