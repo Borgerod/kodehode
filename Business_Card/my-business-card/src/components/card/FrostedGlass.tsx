@@ -16,7 +16,7 @@ export interface FrostedGlassProps extends HTMLAttributes<HTMLDivElement> {
 
 const baseClasses =
 	// "relative isolate flex flex-col gap-4 rounded-[1rem] p-4 backdrop-blur-[10px]  max-w-150";
-	"relative isolate flex flex-col gap-0  p-1 rounded-[1rem] backdrop-blur-[10px] max-w-150 flex-1 min-h-0";
+	"relative isolate flex flex-col gap-0 p-4 rounded-3xl backdrop-blur-[10px] max-w-150";
 
 // "relative isolate flex w-full flex-col gap-4 rounded-[1rem] p-4 backdrop-blur-[10px]";
 // "relative isolate flex w-full max-w-[320px] flex-col gap-4 rounded-[1rem] p-4 backdrop-blur-[10px]";
@@ -152,7 +152,6 @@ export default function FrostedGlass({
 			? "border-white/40 text-foreground"
 			: "border-white/10 text-white/90"
 		: variantClasses[variant];
-
 	const card = (
 		<div
 			className={cx(
@@ -164,7 +163,6 @@ export default function FrostedGlass({
 				className
 			)}
 			style={{
-				padding: "1rem",
 				// only apply forced height for overlay instance via createPortal path
 				...style,
 			}}
