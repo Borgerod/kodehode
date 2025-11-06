@@ -12,6 +12,11 @@ body {
 	background-repeat: no-repeat;
 }
 
+/* Disable page scrolling (prevents two-finger touchpad scrolling) */
+html, body {
+    overflow: hidden;
+}
+
 :root {
 	background-image: url("/assets/images/background.jpg");
 }
