@@ -195,6 +195,7 @@ export default function Home() {
 	);
 }
 
+
 // //* THIS IS HOW I WANT IT TO LOOK LIKE
 // "use client";
 // import FrostedGlass from "@/components/card/FrostedGlass";
