@@ -11,6 +11,7 @@ import { TbBrandGithubFilled } from "react-icons/tb";
 import { Tag } from "@/components/button/Tag";
 import { ButtonGrid } from "@/components/button/ButtonGrid";
 import { StylizedCircle } from "@/components/accessories/stylized_circle";
+import WorkExperience from "@/components/sections/WorkExperience";
 
 
 
@@ -18,7 +19,7 @@ export default function Home() {
 	return (
 		<main className="h-150 flex flex-row gap-8">
 			{/* 1.0) LEFT SIDE */}
-			<div className="flex flex-row p-0 m-0 w-full max-w-150 h-full">
+			<div className="flex flex-row p-0 m-0 w-full h-full min-w-150 max-w-150">
 				
 				{/* 1.1) STACKED OFFSET CONTAINER - Profile window */}
 				<FrostedGlass variant="light" offset className="flex flex-col justify-between">
@@ -62,7 +63,7 @@ export default function Home() {
 				<FrostedGlass
 					variant="light"
 					color="white"
-					className="h-full flex-[3] relative">
+					className="h-full flex-[3] relative  min-w-150 max-w-200 max-w-150">
 					{/* className="h-150 flex-[3] relative"> */}
 					<div className="flex flex-row w-full gap-0 p-0 h-full">
 						{/* 1.2.1) MAIN-LEFTSIDE */}
@@ -72,15 +73,13 @@ export default function Home() {
 						{/* 1.2.2) MAIN-RIGHTSIDE */}
 						<div className="flex flex-col justify-evenly h-full w-[60%] gap-2 p-1">
 							{/* 1.2.2.1) MAIN-RIGHT-TOPSIDE - STYLYZED CARD (stats + logo) */}
-							<Card className="bg-[var(--color-surface-green-primary)]">
-								<h2 className=" text-xl font-display mb-2 ">
-									Light Frosted Glass
+							<Card className="bg-[var(--color-surface-green-primary)] p-0 m-0">
+								<h2 className="  font-display mb-2 text-secondary">
+									MY NUMBERS
 								</h2>
 							</Card>
+							
 							{/* 1.2.2.2) MAIN-RIGHT-MIDDLE - INSET CIRCLE (visual interest) */}
-							{/* Reserve space in the flow for the centered circle so cards don't overlap. */}
-							{/* Spacer keeps the column layout; StylizedCircle is absolutely positioned on top. */}
-							{/* <div className="flex-none h-[17rem] w-full" aria-hidden /> */}
 							<div className="flex-none h-[17rem] w-full" aria-hidden />
 							<StylizedCircle className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full h-[17rem] w-[17rem] pointer-events-none" />
 							{/* 1.2.2.2) MAIN-RIGHT-BOTTOMSIDE - SOLID CARD (work history)  */}
