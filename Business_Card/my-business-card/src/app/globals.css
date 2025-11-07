@@ -39,6 +39,9 @@ html, body {
 .dark {
 	--color-background: hsl(0 0% 3.9%);
 	--color-foreground: hsl(0 0% 98%);
+
+
+
 }
 
 @theme inline {
@@ -55,16 +58,28 @@ html, body {
 
 	/* --color-surface-white-primary: rgb(245, 245, 245 / 80%); */
 	--color-surface-white-primary: rgba(245, 245, 245, 0.35);
-	--color-surface-white-secondary: #dddbd4;
-	--color-surface-white-tertiary: #0f0f0f;
-
+	--color-surface-white-secondary: rgba(245, 245, 245, 0.70);
+	--color-surface-white-tertiary: #dddbd4;
+	/* --color-surface-white-tertiary: #0f0f0f; */
+	--color-surface-white-12-primary: rgba(255,255,255,0.12);
+	--color-surface-white-12-secondary: rgba(255,255,255,0.22);
+	--color-surface-white-4-primary: rgba(255,255,255,0.04);
+	--color-surface-white-4-secondary: rgba(255,255,255,0.12);
+	
+	--color-text-white-translucent-primary: rgba(255,255,255,0.65);
+	--color-text-white-translucent-secondary: rgba(255,255,255,0.85);
+	
 	--color-surface-grey-primary: rgb(97 97 97 / 35%);
 	--color-surface-grey-secondary: rgb(47 46 46 / 80%);
 	--color-surface-grey-tertiary: #121212;
 
 	--color-surface-black-primary: rgb(0 0 0 / 25%);
 	--color-surface-black-secondary: rgb(0 0 0 / 50%);
-	--color-surface-blackj-tertiary: #121212;
+	--color-surface-black-tertiary: #121212;
+
+	--color-surface-very-black-primary: rgba(0, 0, 0, 0.7);
+	--color-surface-very-black-secondary: rgba(0, 0, 0, 0.8);
+	--color-surface-black-tertiary: #121212;
 
 	--color-surface-green-primary: rgb(71 78 68 / 80%);
 	--color-surface-green-secondary: #b6c8ad;

@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 type FrostedGlassVariant = "light" | "dark";
 type Color = "white" | "grey" | "black" | "green";
@@ -27,16 +28,16 @@ const variantClasses: Record<FrostedGlassVariant, string> = {
 };
 
 const colorVariants: Record<Color, string> = {
-	white: "bg-[var(--color-surface-white-primary)]",
+	// white: "bg-[var(--color-surface-white-primary)]",
+	white: "bg-[var(--color-surface-white-secondary)]",
 	grey: "bg-[var(--color-surface-grey-primary)]",
 	black: "bg-[var(--color-surface-black-secondary)]",
 	green: "bg-[var(--color-surface-green-primary)]",
 };
 // (overlay portal rendered directly into document.body; positioning handled via inline styles)
 
-function cx(...classes: Array<string | false | null | undefined>) {
-	return classes.filter(Boolean).join(" ");
-}
+// use `cn()` (clsx + tailwind-merge) so caller classNames can override
+// internal utilities such as `p-4` with `p-1`/`px-*`.
 
 export default function FrostedGlass({
 	variant = "light",
@@ -154,7 +155,7 @@ export default function FrostedGlass({
 		: variantClasses[variant];
 	const card = (
 		<div
-			className={cx(
+			className={cn(
 				baseClasses,
 				variantClassToUse,
 				referenceClass,
@@ -166,7 +167,8 @@ export default function FrostedGlass({
 				// only apply forced height for overlay instance via createPortal path
 				...style,
 			}}
-			{...rest}>
+			{...rest}
+		>
 			{children}
 		</div>
 	);
@@ -191,9 +193,10 @@ export default function FrostedGlass({
 					justifyContent: "center",
 					pointerEvents: "none",
 					zIndex: 1000,
-				}}>
+				}}
+			>
 				<div
-					className={cx(
+					className={cn(
 						baseClasses,
 						variantClassToUse,
 						// apply color variant class when `color` prop is provided
@@ -207,7 +210,8 @@ export default function FrostedGlass({
 						pointerEvents: "auto",
 						...style,
 					}}
-					{...rest}>
+					{...rest}
+				>
 					{children}
 				</div>
 			</div>
