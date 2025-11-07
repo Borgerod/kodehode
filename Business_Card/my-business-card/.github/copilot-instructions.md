@@ -1,5 +1,8 @@
 # Copilot instructions — my-business-card
 
+-   Do not add borders to anything unless instructed to do so.
+-   when generating components, use the colors from globals.css
+
 Short, actionable instructions to help AI coding agents be productive in this repo.
 This is a Next.js (app router) project using Tailwind v4 + TypeScript. Keep guidance
 aligned to the installed packages and official docs.
