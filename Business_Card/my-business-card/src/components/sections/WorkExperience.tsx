@@ -3,63 +3,80 @@
 import FrostedGlass from "@/components/card/FrostedGlass";
 import { Button } from "@/components/button/Button";
 import { Tag } from "@/components/button/Tag";
+import { LuChevronsRight } from "react-icons/lu";
 
 export default function WorkExperience() {
   return (
     <FrostedGlass
       variant="dark"
       color="green"
-      className="rounded-xl flex-1 p-0 flex flex-col justify-between"
+    //   className="h-60 w-80 rounded-xl flex-1 p-0 flex flex-col justify-between "
+      className="rounded-xl flex-1 flex flex-col justify-between gap-1 px-4 py-3"
     >
-      <h2 className="text-lg text-[var(--color-foreground)]">Work Experience</h2>
-
-      {/* JOB LIST */}
-      <div className="flex flex-col justify-items-start align-top ">
+      <h2 className="text-md font-thin text-[var(--color-foreground)]"> Work Experience </h2>
+      <hr className="text-[var(--color-surface-white-12-secondary))]"/>
+      
+      {/* JOB-LIST */}
+      <div className="flex flex-col justify-items-start align-top gap-2">
         {/* Job */}
-        <div className="flex flex-row  text-xs font-light items-start justify-evenly">
+        <div className="flex flex-row w-full text-xs font-light items-start justify-between">
           {/* date */}
-          <div className="text-[9px] font-light flex-none text-left  flex flex-row ">
-            <p>Jul 22</p>
-            <p> - </p>
+          <div className="py-0.5 text-[8px] font-light flex-none text-left  flex flex-row italic">
+            <p className="mr-0.5">Jul 22</p>
+            <p className="mr-0.5"> - </p>
             <p>Oct 22</p>
           </div>
 
           {/* title+where+(tag) - shorter but flexible */}
-          <div className="flex-1 min-w-0 flex flex-col ">
+          <div className="flex-1 min-w-0 flex flex-col items-start pl-2 gap-0.5">
             {/* title - don't wrap, allow overflow */}
-            <h3 className="text-base whitespace-nowrap overflow-visible">Software Developer</h3>
+            <h3 className="m-0 p-0 mt-0 self-start leading-none text-sm whitespace-nowrap ">Software Developer</h3>
 
-            <div className="text-[9px] flex flex-row whitespace-nowrap overflow-visible">
+            <div className="text-[9px] flex flex-row whitespace-nowrap ">
               {/* employer */}
               <p className="">Mediavest AS</p>
               <p className="mr-1">,</p>
               {/* place */}
               <p className="mr-1">Bergen</p>
               {/* tag */}
-              <Tag className="text-[9px] px-2 h-4 pb-1 pt-0.5 mt-0.5">Project</Tag>
+              {/* <Tag className="text-[9px] px-1 py-0 leading-none text-[rgba(255,255,255,0.65)] bg-[rgba(255,255,255,0.04)] " color="white">Project</Tag> */}
+              <Tag className="text-[9px] font-thin px-2 py-0 leading-none "  color="white_secondary" >Project</Tag>
             </div>
           </div>
 
           {/* read_more - do not stretch, fit content */}
           <div className="flex-none self-start ">
-            <Button shape="pill" color="none" className="w-auto inline-flex text-[11px] font-light p-1">Read more</Button>
+            <Button
+              shape="pill"
+              color="white_secondary" 
+              variant="frosted"
+              brightness="dark"
+            //   className="w-auto inline-flex items-center gap-1 text-[11px] font-light px-2 py-0.5 h-auto leading-none text-[rgba(255,255,255,0.65)] bg-[rgba(255,255,255,0.04)]" variant="frosted"
+              className="w-auto inline-flex items-center gap-1 text-[11px] font-light px-2 py-0.5 h-auto leading-none " 
+            > 
+              <span>Read more</span>
+              <LuChevronsRight />
+
+            </Button>
           </div>
         </div>
 
-        <div className="flex flex-row  text-xs font-light items-start justify-evenly">
+        {/* Job */}
+        <div className="flex flex-row w-full text-xs font-light items-start justify-between">
           {/* date */}
-          <div className="text-[9px] font-light flex-none text-left  flex flex-row ">
-            <p>Jul 22</p>
-            <p> - </p>
+          <div className="text-[8px] font-light flex-none text-left  flex flex-row italic ">
+            <p className="mr-0.5">Jul 22</p>
+            <p className="mr-0.5"> - </p>
             <p>Oct 22</p>
+
           </div>
 
           {/* title+where+(tag) - shorter but flexible */}
-          <div className="flex-1 min-w-0 flex flex-col justify-items-center">
+          <div className="flex-1 min-w-0 flex flex-col items-start pl-2 gap-0.5">
             {/* title - don't wrap, allow overflow */}
-            <h3 className="text-base whitespace-nowrap overflow-visible">Software Developer</h3>
+            <h3 className="m-0 p-0 mt-0 self-start leading-none text-sm whitespace-nowrap ">Software Developer</h3>
 
-            <div className="text-[9px] flex flex-row whitespace-nowrap overflow-visible">
+            <div className="text-[9px] flex flex-row whitespace-nowrap ">
               {/* employer */}
               <p className="">Mediavest AS</p>
               <p className="mr-1">,</p>
@@ -70,24 +87,36 @@ export default function WorkExperience() {
 
           {/* read_more - do not stretch, fit content */}
           <div className="flex-none self-start ">
-            <Button shape="pill" color="none" className="w-auto inline-flex text-[11px] font-light p-1">Read more</Button>
+            <Button
+              shape="pill"
+              color="white_secondary" 
+              variant="frosted"
+              brightness="dark"
+            //   className="w-auto inline-flex items-center gap-1 text-[11px] font-light px-2 py-0.5 h-auto leading-none text-[rgba(255,255,255,0.65)] bg-[rgba(255,255,255,0.04)]" variant="frosted"
+              className="w-auto inline-flex items-center gap-1 text-[11px] font-light px-2 py-0.5 h-auto leading-none " 
+            > 
+              <span>Read more</span>
+              <LuChevronsRight />
+
+            </Button>
           </div>
         </div>
 
-        <div className="flex flex-row  text-xs font-light items-start justify-evenly">
+          {/* Job */}
+        <div className="flex flex-row w-full text-xs font-light items-start justify-between">
           {/* date */}
-          <div className="text-[9px] font-light flex-none text-left  flex flex-row ">
-            <p>Jul 22</p>
-            <p> - </p>
+          <div className="text-[8px] font-light flex-none text-left  flex flex-row italic ">
+            <p className="mr-0.5">Jul 22</p>
+            <p className="mr-0.5"> - </p>
             <p>Oct 22</p>
           </div>
 
           {/* title+where+(tag) - shorter but flexible */}
-          <div className="flex-1 min-w-0 flex flex-col ">
+          <div className="flex-1 min-w-0 flex flex-col items-start pl-2 gap-0.5">
             {/* title - don't wrap, allow overflow */}
-            <h3 className="text-base whitespace-nowrap overflow-visible">Software Developer</h3>
+            <h3 className="m-0 p-0 mt-0 self-start leading-none text-sm whitespace-nowrap ">Software Developer</h3>
 
-            <div className="text-[9px] flex flex-row whitespace-nowrap overflow-visible">
+            <div className="text-[9px] flex flex-row whitespace-nowrap ">
               {/* employer */}
               <p className="">Mediavest AS</p>
               <p className="mr-1">,</p>
@@ -98,10 +127,24 @@ export default function WorkExperience() {
 
           {/* read_more - do not stretch, fit content */}
           <div className="flex-none self-start ">
-            <Button shape="pill" color="none" className="w-auto inline-flex text-[11px] font-light p-1">Read more</Button>
+            <Button
+              shape="pill"
+              color="white_secondary" 
+              variant="frosted"
+              brightness="dark"
+            //   className="w-auto inline-flex items-center gap-1 text-[11px] font-light px-2 py-0.5 h-auto leading-none text-[rgba(255,255,255,0.65)] bg-[rgba(255,255,255,0.04)]" variant="frosted"
+              className="w-auto inline-flex items-center gap-1 text-[11px] font-light px-2 py-0.5 h-auto leading-none " 
+            > 
+              <span>Read more</span>
+              <LuChevronsRight />
+
+            </Button>
           </div>
         </div>
+
       </div>
+    
     </FrostedGlass>
+    
   );
 }
