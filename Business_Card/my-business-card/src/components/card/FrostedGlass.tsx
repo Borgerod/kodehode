@@ -28,7 +28,6 @@ const variantClasses: Record<FrostedGlassVariant, string> = {
 };
 
 const colorVariants: Record<Color, string> = {
-	// white: "bg-[var(--color-surface-white-primary)]",
 	white: "bg-[var(--color-surface-white-secondary)]",
 	grey: "bg-[var(--color-surface-grey-primary)]",
 	black: "bg-[var(--color-surface-black-secondary)]",
