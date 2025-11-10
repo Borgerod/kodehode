@@ -1,5 +1,6 @@
 # Copilot instructions — my-business-card
 
+-   Do not add comments to generated code (enforced)
 -   Do not add borders to anything unless instructed to do so.
 -   when generating components, use the colors from globals.css
 
