@@ -14,109 +14,121 @@ import { IoIosMail } from "react-icons/io";
 import { TbBrandGithubFilled } from "react-icons/tb";
 import { Tag } from "@/components/button/Tag";
 import { ButtonGrid } from "@/components/button/ButtonGrid";
-import { StylizedCircle } from "@/components/accessories/stylized_circle";
+import { StylizedCircle } from "@/components/accessories/StylizedCircle";
 import WorkExperience from "@/components/sections/WorkExperience";
 import StylizedCard from "@/components/card/StylizedCard";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
 	return (
-		<main className="h-170 flex flex-row gap-8 px-10">
+		<main className="h-170 flex flex-row gap-8 px-50">
 			{/* 1.0) LEFT SIDE */}
 			<div className="flex flex-row p-0 m-0 w-full h-full min-w-120 max-w-150">
-				{/* 1.1) STACKED OFFSET CONTAINER - Profile window */}
-				<FrostedGlass
-					variant="light"
-					offset
-					className="flex flex-col justify-between"
-				>
-					{/* profile picture */}
-					<div className="rounded-full aspect-square bg-gray-100"></div>
-					{/* name and title */}
-					<div>
-						<h1 className="text-xl">ALEKSANDER BORGERØD</h1>
-						<h2 className="text-lm">Fullstackutvikler og økonom</h2>
-					</div>
-
-					{/* BIO */}
-					<div className="flex flex-col justify-around gap-2 text-xs text-secondary">
-						<p className="">
-							With a broad knowledge within development and
-							business, that stretches over statistics, marketing
-							and design; makes me the perfect fit for your
-							company.
-						</p>
-						<p className="">
-							A diligent worker that strives for flourishing
-							profit margins, ambitious to climb your corporate
-							ladder. As an aspiring family man i seek the
-							stability of a long term employment.
-						</p>
-						<p className="">
-							So, with my vigor and good solutions, I am confident
-							that I am the one you are looking for.
-						</p>
-					</div>
-					{/* button row */}
-					<div className="flex flex-row self-baseline w-full justify-around text-white fill-white text-sm">
-						<Button
-							brightness="dark"
-							variant="frosted"
-							shape="pill"
-							color="very_black"
-							className="px-8 text-white/90"
-						>
-							Send me an Email
-						</Button>
-						<Button
-							brightness="dark"
-							variant="frosted"
-							shape="circular"
-							mode="icon"
-							color="very_black"
-							className="text-white/90"
-						>
-							{" "}
-							<FaPhone />
-						</Button>
-					</div>
-				</FrostedGlass>
-
 				{/* 1.2) MAIN PROFILE CONTAINER */}
-				<FrostedGlass
-					variant="light"
-					color="white"
-					className="h-full flex-[3] relative  min-w-120 max-w-200 max-w-150"
-				>
-					{/* className="h-150 flex-[3] relative"> */}
-					<div className="flex flex-row w-full gap-0 p-0 h-full">
-						{/* 1.2.1) MAIN-LEFTSIDE */}
-						<div className="flex h-full w-[55%]"></div>
+				<div>
+					<div
+						className={cn(
+							"w-full h-full",
+							"bg-transparent",
+							"grid [grid-template-areas:'stack'] grid-rows-[auto auto] grid-cols-[3fr]",
+							"justify-items-stretch content-between"
+						)}
+					>
+						{/* THE FILL for THE GRID */}
+						<FrostedGlass
+							variant="light"
+							color="white"
+							className={cn(
+								"row-start-1 row-end-4",
+								"col-start-1 col-end-3"
+							)}
+						></FrostedGlass>
 
-						{/* 1.2.2) MAIN-RIGHTSIDE */}
-						<div className="flex flex-col justify-evenly h-full w-[60%] gap-2 p-1">
-							{/* 1.2.2.1) MAIN-RIGHT-TOPSIDE - STYLYZED CARD (stats + logo) */}
+						<div className="row-start-1 row-end-4 col-start-1 z-1 mb-5 mt-5">
+							<FrostedGlass
+								variant="light"
+								className={cn(
+									"flex flex-col justify-between",
+									"h-full",
+									"w-[calc(100%)]",
+									"-ml-5"
+								)}
+							>
+								{/* profile picture */}
+								<div className="rounded-full aspect-square bg-gray-100"></div>
+								{/* name and title */}
+								<div>
+									<h1 className="text-xl">
+										ALEKSANDER BORGERØD
+									</h1>
+									<h2 className="text-lm">
+										Fullstackutvikler og økonom
+									</h2>
+								</div>
+								{/* BIO */}
+								<div className="flex flex-col justify-around gap-2 text-xs text-secondary">
+									<p className="">
+										With a broad knowledge within
+										development and business, that stretches
+										over statistics, marketing and design;
+										makes me the perfect fit for your
+										company.
+									</p>
+									<p className="">
+										A diligent worker that strives for
+										flourishing profit margins, ambitious to
+										climb your corporate ladder. As an
+										aspiring family man i seek the stability
+										of a long term employment.
+									</p>
+									<p className="">
+										So, with my vigor and good solutions, I
+										am confident that I am the one you are
+										looking for.
+									</p>
+								</div>
+								{/* button row */}
+								<div className="flex flex-row self-baseline w-full justify-around text-white fill-white text-sm">
+									<Button
+										brightness="dark"
+										variant="frosted"
+										shape="pill"
+										color="very_black"
+										className="px-8 text-white/90"
+									>
+										Send me an Email
+									</Button>
+									<Button
+										brightness="dark"
+										variant="frosted"
+										shape="circular"
+										mode="icon"
+										color="very_black"
+										className="text-white/90"
+									>
+										{" "}
+										<FaPhone />
+									</Button>
+								</div>
+							</FrostedGlass>
+						</div>
+
+						{/* <div className="row-start-1 row-end-3"> */}
+						<div className="row-start-1 col-start-2 mr-5 mt-5">
 							<StylizedCard />
-							{/* <Card className="bg-[var(--color-surface-green-primary)] p-0 m-0">
-								<h2 className="  font-display mb-2 text-secondary">
-									MY NUMBERS
-								</h2>
-							</Card> */}
-
-							{/* 1.2.2.2) MAIN-RIGHT-MIDDLE - INSET CIRCLE (visual interest) */}
-							<div
-								className="flex-none h-[17rem] w-full"
-								aria-hidden
-							/>
-							<StylizedCircle className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full h-[17rem] w-[17rem] pointer-events-none" />
-
-							{/* 1.2.2.2) MAIN-RIGHT-BOTTOMSIDE - SOLID CARD (work history)  */}
+						</div>
+						{/* <div className="row-start-2 col-start-1 col-end-2"> */}
+						<div className="row-start-2 col-start-1 col-end-3 place-self-center z-0">
+							<StylizedCircle className=" rounded-full h-[17rem] w-[17rem] pointer-events-none" />
+						</div>
+						<div className="row-start-3 col-start-2 mr-5 mb-5">
 							<WorkExperience />
-							{/* <Card className="bg-[var(--color-surface-green-primary)] text-[var(--color-foreground)]">
-
-							</Card> */}
 						</div>
 					</div>
-				</FrostedGlass>
+
+					{/*> _______ TEST AREA __________________________________________ */}
+					{/* </FrostedGlass> */}
+				</div>
 			</div>
 
 			{/* 2.0) RIGHT SIDE */}

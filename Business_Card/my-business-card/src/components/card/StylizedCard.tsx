@@ -56,10 +56,12 @@ export default function StylizedCard() {
 		<Card
 			disableInnerWrapper
 			className={cn(
-				"relative rounded-2xl   text-text-white-translucent-primary font-light p-0 m-0 w-full h-full min-h-0",
+				"relative rounded-2xl   text-text-white-translucent-primary font-light p-0 m-0 ",
 				"bg-transparent",
 				"grid [grid-template-areas:'stack'] grid-rows-[1fr] grid-cols-[1fr] place-items-center",
-				"overflow-clip"
+				"overflow-clip",
+				"h-fit",
+				"w-full h-full min-h-0"
 			)}
 		>
 			<div className="[grid-area:stack] relative h-full w-full m-0 overflow-visible bg-transparent pt-4">

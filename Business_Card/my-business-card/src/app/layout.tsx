@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import "./globals.css";
 
 import type { Metadata } from "next";
@@ -20,13 +21,16 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body 
-				className={`@container/main ${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-[url('/assets/images/background.jpg')] bg-cover bg-center flex flex-row items-center justify-center`}>
+			<body
+				className={cn(
+					`@container/main ${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-[url('/assets/images/background.jpg')]`,
+					"bg-cover bg-center flex flex-row items-center justify-center"
+				)}
+			>
 				{children}
 			</body>
 		</html>
-	);		
-
+	);
 }
 
 //  gap-8

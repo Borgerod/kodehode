@@ -198,7 +198,6 @@ export default function FrostedGlass({
 					className={cn(
 						baseClasses,
 						variantClassToUse,
-						// apply color variant class when `color` prop is provided
 						color ? colorVariants[color] : undefined,
 						className
 					)}

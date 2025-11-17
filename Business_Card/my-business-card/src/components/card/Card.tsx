@@ -12,7 +12,8 @@ export function Card({ children, className, disableInnerWrapper }: CardProps) {
 	return (
 		<section
 			className={cn(
-				"rounded-xl p-0 w-full h-full flex-1 text-[var(--color-foreground)]",
+				// "rounded-xl p-0 w-full h-full flex-1 text-[var(--color-foreground)]",
+				"rounded-xl p-0 w-full text-[var(--color-foreground)]",
 				className
 			)}
 		>
