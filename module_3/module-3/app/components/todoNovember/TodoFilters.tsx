@@ -1,32 +1,42 @@
-// interface Todo {
-// 	id: string;
-// 	title: string;
-// 	completed: boolean;
-// 	createdAt: number;
-// }
-import { toggleFilters } from "@/app/utils/filters";
-// setTodos(todos.filter((task) => task.id !== id));
-
-export default function TodoFilters() {
-	// function setFilter(value: string): void {
-	// 	console.log(value);
-	// 	toggleFilters()
-	// }
-
+import { FILTER, SORT_ORDERS } from "@/filterConfig";
+type Props = {
+	filter: string;
+	setFilter: React.Dispatch<React.SetStateAction<string>>;
+	sortOrder: string;
+	setSortOrder: React.Dispatch<React.SetStateAction<string>>;
+};
+export default function TodoFilters({
+	filter,
+	setFilter,
+	sortOrder,
+	setSortOrder,
+}: Props) {
 	return (
 		<>
-			<button className="bg-gray-500 rounded-full">show completed</button>
 			<select
 				className=""
 				name=""
 				id=""
-				onChange={(e) => toggleFilters(e.target.value)}
-			>
-				{/* <select className="bg-gray-800 rounded-md" name="" id=""> */}
+				value={filter}
+				onChange={(e) => setFilter(e.target.value)}>
+				{Object.values(FILTER).map((item: string) => (
+					<option key={item} value={item}>
+						{item}
+					</option>
+				))}
+			</select>
 
-				<option value="all">Show All</option>
-				<option value="completed">Completed</option>
-				<option value="incompleted">Incompleted</option>
+			<select
+				className=""
+				name=""
+				id=""
+				autoComplete={sortOrder}
+				onChange={(e) => setSortOrder(e.target.value)}>
+				{Object.values(SORT_ORDERS).map((item: string) => (
+					<option key={item} value={item}>
+						{item}
+					</option>
+				))}
 			</select>
 		</>
 	);
