@@ -34,7 +34,7 @@ export const sortArray = (array, sortOrder) => {
 };
 
 const sortAZ = (array) => {
-	return [...array].sort((a, b) => a.title.localeCompare(b.title));
+	// return [...array].sort((a, b) => a.title.localeCompare(b.title));
 };
 const sortZA = (array) => {
 	return [...array].sort((a, b) => b.title.localeCompare(a.title));
